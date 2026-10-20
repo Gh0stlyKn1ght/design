@@ -11,7 +11,7 @@ Review date: **October 20, 2026** · Planning edition 1
 
 This report reviews the local `design` repository, branch `gh-pages`, revision `93a415bf928751d37fce6f83215c521658e20c93`. The fork is [Gh0stlyKn1ght/design](https://github.com/Gh0stlyKn1ght/design); upstream is [ros2/design](https://github.com/ros2/design). All four dedicated security article files matched the live upstream `gh-pages` files byte for byte during this review. These are upstream documentation issues, rather than differences introduced by this fork.
 
-The deliverables include this report, a complete section inventory, an extracted historical reference reader, and a separate landscape figure atlas. The article sources remain unchanged. The reader changes presentation, not the historical technical claims. No robot, network, or middleware runtime was assessed.
+The deliverables include this report, a complete section inventory, an extracted historical reference reader, and a separate landscape figure atlas. The article sources were unchanged at this review baseline; the subsequent technical revision is documented in the companion handbook. The reader changes presentation, not the historical technical claims. No robot, network, or middleware runtime was assessed.
 
 ## 1. What security material exists?
 
@@ -124,26 +124,18 @@ The generic threat table has **27 logical columns**. The TurtleBot and MARA tabl
 
 **Implemented in this planning package:**
 
-- A US Letter portrait report and reference reader, with white backgrounds, black text, page numbers, source credits, and linked contents.
+- A report and reference reader with white backgrounds, black text, page numbers, source credits, and linked contents.
 - Wide threat matrices converted into vertical records. Every supplied original field is retained, including explicit historical symbols and inherited rowspan values. Malformed source rows with missing or extra cells are retained in source order and explicitly flagged for unresolved alignment. No numeric score is silently recalculated.
 - A separate, uniformly landscape figure atlas for the threat-model images. It can be printed as a separate job without mixed-orientation duplex problems. Enlarging the original rasters does not restore missing detail.
 - Offline HTML companions and a repeatable Python build. The source inventory records paths, headings, line ranges, keyword matches, and hashes.
-
-**Print settings:** Use Letter paper and “Actual size” or 100%. For the portrait files, select portrait and long-edge duplex if desired. Print the atlas separately in landscape; short-edge duplex normally keeps landscape pages upright. Printer drivers differ, so confirm the duplex preview before printing a large batch. Disable browser-added headers and footers when printing the HTML; the PDFs already have pagination. A4 is a future alternate build if requested.
 
 For the final revised handbook, redraw the densest figures as editable vector diagrams, split complex attack trees into labeled panels, and keep the threat records as the primary paper format. Preserve the source matrices in machine-readable form for comparison. Add a one-page-per-threat option only if we need worksheets; it would use substantially more paper.
 
 ## 6. Credit and provenance
 
-Use the following cover credit:
+Review and adaptation: **Juan Carlos Nevarez · Gh0stlyKn1ght** · [@Gh0stlyKn1ght](https://github.com/Gh0stlyKn1ght).
 
-**Juan Carlos Nevarez · Gh0stlyKn1ght**  
-**Security review, adaptation, and additional material**  
-**github.com/Gh0stlyKn1ght**
-
-The GitHub spelling follows this fork's actual remote owner. It differs from the spellings in the request; the display name can be changed without changing the destination link.
-
-Preserve original article authors next to each extracted article:
+Original article authors:
 
 - DDS-Security integration: Kyle Fazzari.
 - Access Control Policies: Ruffin White and Kyle Fazzari.

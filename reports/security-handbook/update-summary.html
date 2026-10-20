@@ -120,16 +120,15 @@ figure img { max-height: 6.5in; }
 <tr>
 <td>Print layout</td>
 <td>New editable vector figure and portrait updated handbook.</td>
-<td>Physical printer proof remains absent.</td>
+<td>Two proof jobs completed; physical appearance still needs confirmation.</td>
 </tr>
 </tbody>
 </table>
 <p>Additional material includes a full lab recipe, restrictive policy, offline schema/XSLT generation and semantic grant checks, eight boundary tests, non-overwriting provisioning script, version capture, and technology recommendations. All five supporting articles now clarify the relevant security boundary: enclave commands, participant mapping, action names, the historical DDS overview, and the network-flow API discussion.</p>
-<p>The follow-up repaired the served OAuth surface, pinned the Jekyll build, corrected the fork URL/base path, and checked the site in Chromium. A manual Pages workflow is prepared; publication is separately tracked. This does not imply a current CVE audit, robot deployment or hardware assessment.</p></section><section class="chapter" id="runtime-results"><h1 id="runtime-results-runtime-and-publication-validation">Runtime and publication validation</h1>
+<p>The follow-up repaired the served OAuth surface, pinned the Jekyll build, corrected the fork URL/base path, and checked the site in Chromium. A manual Pages workflow is prepared; publication is separately tracked. This does not imply a current CVE audit, robot deployment or hardware assessment.</p></section><section class="chapter" id="runtime-results"><h1 id="runtime-results-recorded-lab-results">Recorded lab results</h1>
 <p><strong>Juan Carlos Nevarez · Gh0stlyKn1ght</strong> · October 20, 2026.</p>
 <h2 id="runtime-results-what-was-actually-run">What was actually run</h2>
-<p>The non-actuating lab was executed using Ubuntu 24.04 Noble userspace and official ROS Jazzy packages in a private directory on the Kali workstation. Bubblewrap supplied separate user, PID and network namespaces. Only loopback was enabled for the communication tests, and the repository was mounted read-only. No ROS packages were installed into the host OS and no robot was attached.</p>
-<p>The Ubuntu root image matched its official SHA-256 manifest; its GPG signature was not independently checked. The private image's <code>staff</code> group was mapped to namespace GID 0 to allow a fontconfig package post-installation step under the single-GID mapping. This was an execution environment, not a test of host isolation, a stock Ubuntu boot, or a hardened container product.</p>
+<p>The non-actuating lab ran in Ubuntu 24.04 Noble userspace on x86_64 with official ROS Jazzy packages. Tests used a private network namespace with loopback only. This was a software communication test; host isolation and physical robot behavior were outside its scope.</p>
 <p>The installed baseline included <strong>Fast DDS 2.14.7</strong>, <strong>rmw_fastrtps_cpp 8.4.4</strong>, and <strong>SROS 2 0.13.6</strong>. Exact Debian package versions, the host kernel, selected settings, public runtime-artifact hashes, and sanitized logs are retained in <code>runtime-evidence/</code>. Authority keys and participant private keys remain outside the repository.</p>
 <h2 id="runtime-results-observed-ros-cases">Observed ROS cases</h2>
 <table>
@@ -191,17 +190,11 @@ figure img { max-height: 6.5in; }
 </code></pre>
 <p>Run only on a non-actuating lab system. The runner uses domain 42 and localhost discovery, scopes shutdown to the processes it starts, refuses to reuse an output directory, and returns a nonzero status if any case fails or is inconclusive. Review the logs and version manifest before comparing results across machines.</p>
 <p>The optional <code>authentication_probe.cpp</code> targets the Fast DDS 2.14 API and requires that version's headers/libraries and a C++ compiler. Its native callback observations are separate from the ROS application delivery cases; it does not replace them.</p>
-<h2 id="runtime-results-website-checks">Website checks</h2>
-<p>The site was built with Jekyll 4.4.1 and a committed dependency lockfile. Its fork URL and <code>/design</code> base path replace the inherited upstream domain configuration. The public site uses static navigation: inherited OAuth/token-storage scripts, third-party analytics, and the old login route are excluded from the served output. This is a focused repair of the published surface, not a full dependency or vulnerability audit.</p>
-<p>All four revised security pages and the landing page loaded in Chromium. A static sweep checked 131 local links/assets across those pages. PDF downloads, the vector figure, and an exact historical source download returned successfully. No JavaScript errors, failed assets, or mobile horizontal overflow were observed.</p>
-<p>The historical sources retain front matter and Liquid snippets. The site build excludes them from Jekyll processing and copies them as exact downloads afterward; this prevents archived permalinks or includes from replacing the revised pages.</p>
-<p>Publication is separately tracked. A local build/browser check does not prove a GitHub Pages deployment. The Pages workflow is manual, and deployment verification must compare its source commit and handbook hash with <code>site-build.json</code> after publication.</p>
-<h2 id="runtime-results-printer-proof-and-remaining-limits">Printer proof and remaining limits</h2>
-<p>Two one-page proofs were submitted to the connected HP LaserJet: a portrait lab-command page and the landscape diagram. CUPS reported both jobs completed. Physical orientation, clipping and readability still need the user's observation; spool completion is not paper verification.</p>
-<p>Still unverified: any physical robot, actuator safety, revocation/expiry and recovery behavior, hardware-backed keys, privileged-host isolation, bounded overload behavior, and packet-level confidentiality. The separate-authority case remains inconclusive as described above. No new vulnerability assessment or compliance conclusion is claimed.</p></section><section class="chapter" id="technology"><h1 id="technology-libraries-and-technology-choices">Libraries and technology choices</h1>
+<h2 id="runtime-results-limits-of-these-observations">Limits of these observations</h2>
+<p>The separate-authority case remains inconclusive. Further tests are needed for revocation, expiry, credential renewal and recovery, hardware-backed keys, privileged-host isolation, bounded overload behavior, and packet-level confidentiality. No physical robot or actuator was tested. The run does not establish a vulnerability assessment or compliance conclusion.</p></section><section class="chapter" id="technology"><h1 id="technology-libraries-and-technology-choices">Libraries and technology choices</h1>
 <p><strong>Juan Carlos Nevarez · Gh0stlyKn1ght</strong> · Reviewed October 20, 2026.</p>
-<p>Use a small stack with clear boundaries: SROS 2 for DDS identity/policy material, a reviewed XML check for the example policy, Graphviz for editable vector diagrams, and WeasyPrint for predictable paper output. The choices below distinguish tools used in this edition from deployment options that need a target-system trial.</p>
-<h2 id="technology-adopted-in-this-edition">Adopted in this edition</h2>
+<p>Use SROS 2 for DDS identity and permissions, a bounded XML checker for the example policy, and an editable threat register and architecture diagram. The choices below distinguish tools used in the lab from deployment options that need a target-system trial.</p>
+<h2 id="technology-tools-used-in-the-lab-and-threat-model">Tools used in the lab and threat model</h2>
 <table>
 <thead>
 <tr>
@@ -223,27 +216,17 @@ figure img { max-height: 6.5in; }
 </tr>
 <tr>
 <td>Graphviz DOT → SVG/PDF</td>
-<td>Editable architecture source and sharp monochrome diagrams on paper. The build records the installed tool version.</td>
+<td>Editable architecture source with explicit processes, assets and trust boundaries.</td>
 <td>Diagram boundaries are design claims until their controls are verified.</td>
-</tr>
-<tr>
-<td>Markdown + WeasyPrint</td>
-<td>Source-controlled chapters, paged CSS, bookmarks, embedded fonts and US Letter output. Keep the tested 69.0 renderer pinned for this edition.</td>
-<td>Library version alone does not establish PDF accessibility or printing correctness.</td>
 </tr>
 <tr>
 <td>JSON threat register and result template</td>
 <td>Stable IDs, prerequisites, owners, evidence states and residual-risk notes, rendered into printable records.</td>
 <td>No automatic risk score substitutes for a deployment-specific judgment.</td>
 </tr>
-<tr>
-<td>Poppler tools</td>
-<td>Inspect every PDF page size, embedded fonts, extracted text and record coverage.</td>
-<td>A rendered PDF check is not physical printer evidence.</td>
-</tr>
 </tbody>
 </table>
-<p>Primary documentation: <a href="https://github.com/ros2/sros2">SROS 2</a>, <a href="https://lxml.de/resolvers.html">lxml resolution and XSLT access control</a>, <a href="https://graphviz.org/docs/outputs/svg/">Graphviz SVG</a>, and <a href="https://doc.courtbouillon.org/weasyprint/stable/common_use_cases.html#pdf">WeasyPrint PDF guidance</a>. The WeasyPrint documentation describes newer releases too; this package records what it actually used. A future PDF/UA export needs semantic review and an independent conformance check before claiming accessibility compliance.</p>
+<p>Primary documentation: <a href="https://github.com/ros2/sros2">SROS 2</a>, <a href="https://lxml.de/resolvers.html">lxml resolution and XSLT access control</a>, and <a href="https://graphviz.org/docs/outputs/svg/">Graphviz SVG</a>.</p>
 <h2 id="technology-middleware-and-platform-decisions">Middleware and platform decisions</h2>
 <p><strong>For the included exercise:</strong> use Jazzy on Ubuntu 24.04 with <code>rmw_fastrtps_cpp</code>. This keeps the commands and policy aligned with a reviewed official tutorial and the pinned Jazzy transformation. Capture installed package versions; do not infer package versions from the ROS distribution name. The isolated run recorded six passed ROS cases and one inconclusive separate-authority case; consult the runtime observations before relying on a particular claim.</p>
 <p><strong>For a new long-lived robot:</strong> evaluate Lyrical on Ubuntu 26.04 when its hardware/application dependencies are supported. Lyrical's official support horizon is May 2031; Jazzy remains listed through May 2029. The decision depends on drivers, vendor support, package availability, and a measured migration run. See the <a href="https://github.com/ros2/ros2_documentation/blob/rolling/source/Releases.rst">official release table</a> and <a href="https://github.com/ros2/ros2_documentation/blob/rolling/source/Releases/lyrical/supported-platforms.rst">Lyrical platform matrix</a>.</p>
@@ -255,4 +238,48 @@ figure img { max-height: 6.5in; }
 <li><strong>Syft + Grype:</strong> useful for dependency inventory and vulnerability triage of a selected deployment image/filesystem. Record tool versions, artifact digest, database age and exceptions. An SBOM is not evidence that a vulnerability is exploitable; a clean scan does not prove safety. These tools were researched, not run. <a href="https://github.com/anchore/syft">Syft</a>, <a href="https://github.com/anchore/grype">Grype</a>.</li>
 <li><strong>Cosign:</strong> useful when an actual release pipeline needs artifact-signature verification. Define the accepted signing identity/issuer or trusted key and verify the intended artifact digest. Keep this release-signing trust separate from DDS identities. No signing integration was configured. <a href="https://docs.sigstore.dev/cosign/verifying/verify/">Cosign verification</a>.</li>
 </ul>
-<p>The most useful next investment is stronger instrumentation for the inconclusive separate-authority case, followed by a small current-robot case study. Introducing more tooling before those results would not strengthen the handbook's evidence.</p></section></body></html>
+<p>The most useful next investment is stronger instrumentation for the inconclusive separate-authority case, followed by a small current-robot case study. Introducing more tooling before those results would not strengthen the handbook's evidence.</p></section><section class="chapter" id="remaining-work"><h1 id="remaining-work-remaining-work-and-acceptance-criteria">Remaining work and acceptance criteria</h1>
+<p>The four core security articles and five supporting passages have been updated. The lab has six passed runtime cases and one inconclusive case. The following work remains; the completed source revision should not be confused with a validated robot deployment.</p>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Open work</th>
+<th>Evidence needed to close it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Explain the independent-authority result.</td>
+<td>Correlated discovery/handshake diagnostics showing where the untrusted peer is rejected, with a successful trusted control under the same settings. Zero delivered messages alone is insufficient.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Add a current robot case study.</td>
+<td>A named mission, hardware, OS/ROS/RMW versions, topology, assets and trust boundaries; accountable owners, exposure/impact rationale and residual risk for each threat. The present example has no actuators.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Validate operational controls on that target.</td>
+<td>Recorded tests for credential expiry, renewal, revocation and recovery; host/account access to keys; traffic protection; overload limits and recovery. Hardware-backed keys need their own integration test if selected.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Assess the actual release dependencies.</td>
+<td>An inventory of the selected image and packages plus current vulnerability triage tied to its digest and versions. No SBOM or vulnerability scan was run in this revision.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Complete the publication checks.</td>
+<td>A successful remote CI run and, after a publishing target is chosen, a deployed commit and PDF hash matching the approved revision. Local site/browser checks are complete; the current work has not been pushed or deployed.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Confirm the final reading experience.</td>
+<td>Physical observation of the portrait and diagram proofs for orientation, clipping and readability. Two printer jobs completed; paper appearance remains unconfirmed. Tagged output is present, but PDF/UA and screen-reader conformance have not been assessed.</td>
+</tr>
+</tbody>
+</table>
+<p>Additional middleware/platform trials are conditional on the deployment choice: Lyrical, Cyclone DDS, Zenoh and cross-vendor combinations were not runtime-tested here. They should not delay the documented Jazzy/Fast DDS teaching exercise unless the project needs them.</p>
+<p>The next technical step is to close the independent-authority evidence gap. A real robot model and its bounded validation plan follow once the target platform and mission are known.</p></section></body></html>

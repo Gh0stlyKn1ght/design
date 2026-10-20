@@ -5,11 +5,11 @@
   "historical_baseline_revision": "93a415bf928751d37fce6f83215c521658e20c93",
   "documents": {
     "security-handbook": {
-      "pages": 43,
+      "pages": 41,
       "overflow_flags": []
     },
     "update-summary": {
-      "pages": 7,
+      "pages": 8,
       "overflow_flags": []
     },
     "trust-boundaries-landscape": {
@@ -22,19 +22,19 @@
   "sources": [
     {
       "path": "articles/180_ros2_dds_security.md",
-      "sha256": "619cc03969c7c93847c5150cb71d6b7075cbb5d52c94dc4ec2c701c4f2ebfbd1"
+      "sha256": "d0c7e1911c143306457abd6a437ac56f3b1e504c09ff784bc606a3cf8be8d508"
     },
     {
       "path": "articles/181_ros2_access_control_policies.md",
-      "sha256": "17490b05bc34ffc755e88731cc7b90845cbe475795c10c9cb268b5af8e1cbfcd"
+      "sha256": "9cc1dbb35baba857e3801c1b2b54554fdf3c475a6b88def6ab0aa0094dc9c83f"
     },
     {
       "path": "articles/182_ros2_security_enclaves.md",
-      "sha256": "18b81640ad224c4267780846be7f70b64fb5090bcae57832cad54d20cfa4bdb3"
+      "sha256": "2847e69a8c8e20ec05de02fd2cc573f13635b51759ccf89c5a13066b7e47c7f8"
     },
     {
       "path": "articles/183_ros2_threat_model.md",
-      "sha256": "3a63065a51fc9f2291f98207a06e921be64a2fa6d8c8886effbd65a97416c008"
+      "sha256": "91a69c008d27f6aebb1aeb07784a28b4c82118e36f3d0cb08bfacb5fc4016045"
     },
     {
       "path": "articles/160_ros_command_line_arguments.md",
@@ -62,19 +62,27 @@
     },
     {
       "path": "reports/security-handbook/changes.md",
-      "sha256": "0261eb16c7a49bc30d24ba7a89c1b9ce8c6d7faf7d966bcdc9826f07087badb3"
+      "sha256": "627b205ec7a6a67a27620de073aa7b44409789eaec8102cd3108ba2eb035362d"
     },
     {
       "path": "reports/security-handbook/technology-choices.md",
-      "sha256": "7b1a1a223cf52597ac8dae92832e2e90f2b7e4f23f1d6904a814d2bbfbb8de9e"
+      "sha256": "4244a17a218aa3757a6131a0276d246f3e00d428afe909159df3fe98a4f39c7b"
     },
     {
       "path": "reports/security-handbook/runtime-observations.md",
-      "sha256": "41fb55f15544a9b829fd53b32baf8839aa3325504da5ee861303ab27d963712a"
+      "sha256": "ebea85bafa82e5c3e315539a13fdd0c1b5786a9b8832045d88d09e177f1caae9"
+    },
+    {
+      "path": "reports/security-handbook/runtime-lab-results.md",
+      "sha256": "12843ce5c037af71b6a9a7d4998aa0945e26b7e35d411df84c22222247b68838"
+    },
+    {
+      "path": "reports/security-handbook/remaining-work.md",
+      "sha256": "41df3097aa8171fe6b7b87b17cd6c3a23a72d2cc599ce09d4763e88f856189fd"
     },
     {
       "path": "examples/security-lab/README.md",
-      "sha256": "4fa304da355e88b7a787b7dabf685c114d6b36f42216dec3ac4ab5b321d4081f"
+      "sha256": "e2e2076e8b0407d921443974e3ec828a53abc5c6ae111029c2affd2922358ce9"
     },
     {
       "path": "examples/security-lab/authentication_probe.cpp",
@@ -162,7 +170,7 @@
     },
     {
       "path": "img/security/trust-boundaries.pdf",
-      "sha256": "81daef7e4e27245038f12945b35d4192507e86dcbed836c64af671c759fadb61"
+      "sha256": "1293d6c3371719b5def74ac098d95866b77ffa12025aa2e5bc6c576377a0f6a8"
     },
     {
       "path": "img/security/trust-boundaries.svg",
@@ -262,7 +270,7 @@
     },
     {
       "path": "tools/security-handbook/build.py",
-      "sha256": "0a2c6f3a5eaa3056be9ad7f615c5dfb5406c032351240fc94c8e9c283ba23417"
+      "sha256": "edbbee4ec40f1dd07f0ce90100f97a75214ae6d014bcba0814dc37e87c72894d"
     },
     {
       "path": "tools/security-handbook/requirements.txt",
@@ -271,6 +279,10 @@
     {
       "path": "tools/security-handbook/verify.py",
       "sha256": "84902fdb189b98266e575b6f5ca9208cc0ddbf6849e37613b2bf9773b934d3bc"
+    },
+    {
+      "path": "tools/security-review/build.py",
+      "sha256": "eb99269dfe6061a3d47523cfde1fdabbde14110548aa2eef132347f695d7aeef"
     },
     {
       "path": "tools/site/build.py",

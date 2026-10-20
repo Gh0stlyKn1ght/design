@@ -16,7 +16,7 @@ This edition **changes the four security article sources**. It is a technical re
 | F08 · Transport scope | DDS-specific recipe labeled; Zenoh configuration and bridges discussed separately. | Zenoh/bridge deployment tests if selected. |
 | F09 · Scores/evidence | Added 8 structured threat records with owners, prerequisites and residual risk. Old DREAD/RVSS scores remain historical. | Deployment-specific likelihood/impact and accountable owners. |
 | F10 · Proposed claims | Added explicit evidence states, runtime logs and result templates. Six ROS cases passed. | Separate-authority rejection evidence remains inconclusive. |
-| Print layout | New editable vector figure and portrait updated handbook. | Physical printer proof remains absent. |
+| Print layout | New editable vector figure and portrait updated handbook. | Two proof jobs completed; physical appearance still needs confirmation. |
 
 Additional material includes a full lab recipe, restrictive policy, offline schema/XSLT generation and semantic grant checks, eight boundary tests, non-overwriting provisioning script, version capture, and technology recommendations. All five supporting articles now clarify the relevant security boundary: enclave commands, participant mapping, action names, the historical DDS overview, and the network-flow API discussion.
 

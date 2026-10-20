@@ -2,7 +2,7 @@
 
 **Juan Carlos Nevarez · Gh0stlyKn1ght** · October 20, 2026.
 
-**Goal:** distinguish trusted identity, permitted data flow, and enforced startup using a talker/listener system with no actuators. The source-reviewed recipe targets Ubuntu 24.04 + ROS 2 Jazzy + `rmw_fastrtps_cpp`. It was exercised in isolated Ubuntu userspace on this workstation; see the [runtime observations](../../reports/security-handbook/runtime-observations.md) for six passed ROS cases and one inconclusive case. Lyrical, Cyclone DDS, and Zenoh require separately recorded compatibility runs.
+**Goal:** distinguish trusted identity, permitted data flow, and enforced startup using a talker/listener system with no actuators. The exercise targets Ubuntu 24.04 + ROS 2 Jazzy + `rmw_fastrtps_cpp`. It was exercised in isolated Ubuntu userspace; see the [recorded lab results](../../reports/security-handbook/runtime-lab-results.md) for six passed ROS cases and one inconclusive case. Lyrical, Cyclone DDS, and Zenoh require separately recorded compatibility runs.
 
 ## Prerequisites and boundaries
 

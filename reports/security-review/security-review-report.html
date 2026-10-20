@@ -53,7 +53,7 @@ GitHub: <a href="https://github.com/Gh0stlyKn1ght">@Gh0stlyKn1ght</a><br />
 Review date: <strong>October 20, 2026</strong> · Planning edition 1</p>
 <p><strong>Finding:</strong> The security material is worth keeping, but it needs a substantial revision before it can serve as a current implementation guide. Preserve the architecture, trust-boundary analysis, and historical case studies. Correct the instructions, distinguish proposed controls from demonstrated controls, and add one reproducible model for a supported deployment.</p>
 <p>This report reviews the local <code>design</code> repository, branch <code>gh-pages</code>, revision <code>93a415bf928751d37fce6f83215c521658e20c93</code>. The fork is <a href="https://github.com/Gh0stlyKn1ght/design">Gh0stlyKn1ght/design</a>; upstream is <a href="https://github.com/ros2/design">ros2/design</a>. All four dedicated security article files matched the live upstream <code>gh-pages</code> files byte for byte during this review. These are upstream documentation issues, rather than differences introduced by this fork.</p>
-<p>The deliverables include this report, a complete section inventory, an extracted historical reference reader, and a separate landscape figure atlas. The article sources remain unchanged. The reader changes presentation, not the historical technical claims. No robot, network, or middleware runtime was assessed.</p>
+<p>The deliverables include this report, a complete section inventory, an extracted historical reference reader, and a separate landscape figure atlas. The article sources were unchanged at this review baseline; the subsequent technical revision is documented in the companion handbook. The reader changes presentation, not the historical technical claims. No robot, network, or middleware runtime was assessed.</p>
 <h2 id="1-what-security-material-exists">1. What security material exists?</h2>
 <p>There are <strong>four dedicated security articles</strong>, with <strong>6,207 source lines</strong> in total. Their declared modification dates are from 2020–2021. These dates describe the articles' own front matter; they are not release support dates or proof of their last substantive review.</p>
 <table>
@@ -220,20 +220,15 @@ Review date: <strong>October 20, 2026</strong> · Planning edition 1</p>
 <p>The generic threat table has <strong>27 logical columns</strong>. The TurtleBot and MARA tables have <strong>11 and 14</strong>. They combine fixed widths, rowspans, large rotated headings, and inconsistent section colspans. A landscape print setting alone will not make these readable on ordinary paper.</p>
 <p><strong>Implemented in this planning package:</strong></p>
 <ul>
-<li>A US Letter portrait report and reference reader, with white backgrounds, black text, page numbers, source credits, and linked contents.</li>
+<li>A report and reference reader with white backgrounds, black text, page numbers, source credits, and linked contents.</li>
 <li>Wide threat matrices converted into vertical records. Every supplied original field is retained, including explicit historical symbols and inherited rowspan values. Malformed source rows with missing or extra cells are retained in source order and explicitly flagged for unresolved alignment. No numeric score is silently recalculated.</li>
 <li>A separate, uniformly landscape figure atlas for the threat-model images. It can be printed as a separate job without mixed-orientation duplex problems. Enlarging the original rasters does not restore missing detail.</li>
 <li>Offline HTML companions and a repeatable Python build. The source inventory records paths, headings, line ranges, keyword matches, and hashes.</li>
 </ul>
-<p><strong>Print settings:</strong> Use Letter paper and “Actual size” or 100%. For the portrait files, select portrait and long-edge duplex if desired. Print the atlas separately in landscape; short-edge duplex normally keeps landscape pages upright. Printer drivers differ, so confirm the duplex preview before printing a large batch. Disable browser-added headers and footers when printing the HTML; the PDFs already have pagination. A4 is a future alternate build if requested.</p>
 <p>For the final revised handbook, redraw the densest figures as editable vector diagrams, split complex attack trees into labeled panels, and keep the threat records as the primary paper format. Preserve the source matrices in machine-readable form for comparison. Add a one-page-per-threat option only if we need worksheets; it would use substantially more paper.</p>
 <h2 id="6-credit-and-provenance">6. Credit and provenance</h2>
-<p>Use the following cover credit:</p>
-<p><strong>Juan Carlos Nevarez · Gh0stlyKn1ght</strong><br />
-<strong>Security review, adaptation, and additional material</strong><br />
-<strong>github.com/Gh0stlyKn1ght</strong></p>
-<p>The GitHub spelling follows this fork's actual remote owner. It differs from the spellings in the request; the display name can be changed without changing the destination link.</p>
-<p>Preserve original article authors next to each extracted article:</p>
+<p>Review and adaptation: <strong>Juan Carlos Nevarez · Gh0stlyKn1ght</strong> · <a href="https://github.com/Gh0stlyKn1ght">@Gh0stlyKn1ght</a>.</p>
+<p>Original article authors:</p>
 <ul>
 <li>DDS-Security integration: Kyle Fazzari.</li>
 <li>Access Control Policies: Ruffin White and Kyle Fazzari.</li>

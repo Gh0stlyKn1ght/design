@@ -49,7 +49,7 @@ The optional `authentication_probe.cpp` targets the Fast DDS 2.14 API and requir
 
 The site was built with Jekyll 4.4.1 and a committed dependency lockfile. Its fork URL and `/design` base path replace the inherited upstream domain configuration. The public site uses static navigation: inherited OAuth/token-storage scripts, third-party analytics, and the old login route are excluded from the served output. This is a focused repair of the published surface, not a full dependency or vulnerability audit.
 
-All four revised security pages and the landing page loaded in Chromium. A static sweep checked 131 local links/assets across those pages. PDF downloads, the vector figure, and an exact historical source download returned successfully. No JavaScript errors, failed assets, or mobile horizontal overflow were observed.
+All four revised security pages and the landing page loaded in Chromium. After the editorial cleanup, a static sweep checked 127 local links/assets across those pages. PDF downloads, the vector figure, and an exact historical source download returned successfully. No JavaScript errors, failed assets, or mobile horizontal overflow were observed.
 
 The historical sources retain front matter and Liquid snippets. The site build excludes them from Jekyll processing and copies them as exact downloads afterward; this prevents archived permalinks or includes from replacing the revised pages.
 

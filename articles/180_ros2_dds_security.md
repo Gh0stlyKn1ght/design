@@ -24,7 +24,7 @@ Original authors: {{ page.author }}
 
 Originally written: {{ page.date_written }} · Revised: {{ page.revision_date }}
 
-> **Edition notice:** This is the October 2026 fork revision. It updates the technical guidance and preserves the original author credits. The [original article source](security_history/180_ros2_dds_security.md.txt) and the [historical print reader](../reports/security-review/security-reference-reader.pdf) remain available for comparison. Documentation and offline checks do not establish runtime security.
+[Original article](security_history/180_ros2_dds_security.md.txt).
 
 ## Goal and prerequisites
 

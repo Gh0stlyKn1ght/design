@@ -2,20 +2,18 @@
 
 **Juan Carlos Nevarez · Gh0stlyKn1ght** · Reviewed October 20, 2026.
 
-Use a small stack with clear boundaries: SROS 2 for DDS identity/policy material, a reviewed XML check for the example policy, Graphviz for editable vector diagrams, and WeasyPrint for predictable paper output. The choices below distinguish tools used in this edition from deployment options that need a target-system trial.
+Use SROS 2 for DDS identity and permissions, a bounded XML checker for the example policy, and an editable threat register and architecture diagram. The choices below distinguish tools used in the lab from deployment options that need a target-system trial.
 
-## Adopted in this edition
+## Tools used in the lab and threat model
 
 | Technology | Purpose and reason | Limit |
 | --- | --- | --- |
 | SROS 2 policy 0.2.0 | ROS-oriented privileges and a path to signed DDS permission artifacts. The offline example uses a pinned upstream schema and transform. | A valid policy and signed file still need actual middleware enforcement tests. |
 | Python + lxml | Schema validation, the upstream XSLT, exact grant assertions and input-boundary checks. Schema resolution is local; DTDs and XInclude are rejected for this example. | The checker accepts this defined format, not arbitrary external XML/XSLT. |
-| Graphviz DOT → SVG/PDF | Editable architecture source and sharp monochrome diagrams on paper. The build records the installed tool version. | Diagram boundaries are design claims until their controls are verified. |
-| Markdown + WeasyPrint | Source-controlled chapters, paged CSS, bookmarks, embedded fonts and US Letter output. Keep the tested 69.0 renderer pinned for this edition. | Library version alone does not establish PDF accessibility or printing correctness. |
+| Graphviz DOT → SVG/PDF | Editable architecture source with explicit processes, assets and trust boundaries. | Diagram boundaries are design claims until their controls are verified. |
 | JSON threat register and result template | Stable IDs, prerequisites, owners, evidence states and residual-risk notes, rendered into printable records. | No automatic risk score substitutes for a deployment-specific judgment. |
-| Poppler tools | Inspect every PDF page size, embedded fonts, extracted text and record coverage. | A rendered PDF check is not physical printer evidence. |
 
-Primary documentation: [SROS 2](https://github.com/ros2/sros2), [lxml resolution and XSLT access control](https://lxml.de/resolvers.html), [Graphviz SVG](https://graphviz.org/docs/outputs/svg/), and [WeasyPrint PDF guidance](https://doc.courtbouillon.org/weasyprint/stable/common_use_cases.html#pdf). The WeasyPrint documentation describes newer releases too; this package records what it actually used. A future PDF/UA export needs semantic review and an independent conformance check before claiming accessibility compliance.
+Primary documentation: [SROS 2](https://github.com/ros2/sros2), [lxml resolution and XSLT access control](https://lxml.de/resolvers.html), and [Graphviz SVG](https://graphviz.org/docs/outputs/svg/).
 
 ## Middleware and platform decisions
 

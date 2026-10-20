@@ -1,13 +1,13 @@
 {
   "edition": "2026-10-20",
   "page_counts": {
-    "security-handbook": 43,
-    "update-summary": 7,
+    "security-handbook": 41,
+    "update-summary": 8,
     "trust-boundaries-landscape": 1
   },
   "font_embedding": "passed",
   "tagged_pdf": true,
-  "source_hashes_verified": 76,
+  "source_hashes_verified": 79,
   "archived_originals_verified": 4,
   "policy_boundary_tests": 8,
   "render_overflows": 0,
@@ -20,18 +20,5 @@
   "runtime_suite_all_passed": false,
   "runtime_result_origin": "Recorded evidence, not re-executed by this verifier",
   "physical_print_verified": false,
-  "site_build_verified": true,
-  "representative_rendered_pages_inspected": {
-    "security-handbook": [
-      1
-    ],
-    "earlier_revision_pages": [
-      18,
-      28,
-      31
-    ],
-    "trust-boundaries-landscape": [
-      1
-    ]
-  }
+  "site_build_verified": true
 }

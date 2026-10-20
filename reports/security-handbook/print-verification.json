@@ -19,5 +19,6 @@
     }
   ],
   "user_visual_confirmation": null,
-  "physical_print_verified": false
+  "physical_print_verified": false,
+  "proof_scope": "Earlier PDF revisions before the editorial cleanup. Completed jobs establish spool delivery only; final-edition paper appearance remains unconfirmed."
 }
