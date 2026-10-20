@@ -125,7 +125,8 @@ figure img { max-height: 6.5in; }
 </tbody>
 </table>
 <p>Additional material includes a full lab recipe, restrictive policy, offline schema/XSLT generation and semantic grant checks, eight boundary tests, non-overwriting provisioning script, version capture, and technology recommendations. All five supporting articles now clarify the relevant security boundary: enclave commands, participant mapping, action names, the historical DDS overview, and the network-flow API discussion.</p>
-<p>The follow-up repaired the served OAuth surface, pinned the Jekyll build, corrected the fork URL/base path, and checked the site in Chromium. A manual Pages workflow is prepared; publication is separately tracked. This does not imply a current CVE audit, robot deployment or hardware assessment.</p></section><section class="chapter" id="runtime-results"><h1 id="runtime-results-recorded-lab-results">Recorded lab results</h1>
+<p>The follow-up repaired the served OAuth surface, pinned the Jekyll build, corrected the fork URL/base path, and checked the site in Chromium. A manual Pages workflow is prepared; publication is separately tracked. This does not imply a current CVE audit, robot deployment or hardware assessment.</p>
+<p>The handbook also includes six published middleware case studies by Juan Carlos Nevarez (@Gh0stlyKn1ght), adapted from the pinned ROS2X Research public revision with its CC BY 4.0 attribution. They add remote-permission, control-plane availability and parser/resource examples. These are earlier research observations, not additional passes in the included ROS lab. A fresh public-source checksum audit found six stale README hashes; the evidence files matched. The source-audit section records the required reconciliation.</p></section><section class="chapter" id="runtime-results"><h1 id="runtime-results-recorded-lab-results">Recorded lab results</h1>
 <p><strong>Juan Carlos Nevarez · Gh0stlyKn1ght</strong> · October 20, 2026.</p>
 <h2 id="runtime-results-what-was-actually-run">What was actually run</h2>
 <p>The non-actuating lab ran in Ubuntu 24.04 Noble userspace on x86_64 with official ROS Jazzy packages. Tests used a private network namespace with loopback only. This was a software communication test; host isolation and physical robot behavior were outside its scope.</p>
@@ -238,7 +239,15 @@ figure img { max-height: 6.5in; }
 <li><strong>Syft + Grype:</strong> useful for dependency inventory and vulnerability triage of a selected deployment image/filesystem. Record tool versions, artifact digest, database age and exceptions. An SBOM is not evidence that a vulnerability is exploitable; a clean scan does not prove safety. These tools were researched, not run. <a href="https://github.com/anchore/syft">Syft</a>, <a href="https://github.com/anchore/grype">Grype</a>.</li>
 <li><strong>Cosign:</strong> useful when an actual release pipeline needs artifact-signature verification. Define the accepted signing identity/issuer or trusted key and verify the intended artifact digest. Keep this release-signing trust separate from DDS identities. No signing integration was configured. <a href="https://docs.sigstore.dev/cosign/verifying/verify/">Cosign verification</a>.</li>
 </ul>
-<p>The most useful next investment is stronger instrumentation for the inconclusive separate-authority case, followed by a small current-robot case study. Introducing more tooling before those results would not strengthen the handbook's evidence.</p></section><section class="chapter" id="remaining-work"><h1 id="remaining-work-remaining-work-and-acceptance-criteria">Remaining work and acceptance criteria</h1>
+<p>The most useful next investment is stronger instrumentation for the inconclusive separate-authority case, followed by a small current-robot case study. Introducing more tooling before those results would not strengthen the handbook's evidence.</p></section><section class="chapter" id="research-source-audit"><h1 id="research-source-audit-published-research-source-review">Published research source review</h1>
+<p>The handbook now includes a teaching adaptation of six public ROS2X Research case studies by Juan Carlos Nevarez (@Gh0stlyKn1ght). The reviewed public revision is <code>30ce3dd0eb22b384f010e5f9679e459517be6965</code>. The case studies support implementation-specific threat and evidence discussions; they do not change the handbook's six-pass, one-inconclusive runtime result.</p>
+<h2 id="research-source-audit-checksum-reconciliation-needed">Checksum reconciliation needed</h2>
+<p>A read-only check recomputed all 152 entries in the six published case checksum manifests. <strong>146 entries matched; six did not.</strong> Every mismatch is a case <code>README.md</code>. The listed logs, captures, harness sources and other evidence files matched their recorded hashes.</p>
+<p>All six recorded README hashes match their versions immediately before public commit <code>e3985a8</code>, which added architecture diagrams and editorial material. The current READMEs were changed without corresponding checksum updates. This accounts for the observed drift; it does not justify reporting all current published checksums as passing.</p>
+<p>The historical manifests have not been modified. A dated reconciliation that identifies the original manifest, pinned source commit, current README hashes and editorial change is needed before describing the current source bundle as fully checksum-verified. <code>research-source-review.json</code> records the observed hashes and the history comparison.</p>
+<p>The CVE-2023-39948 manifest also retains <code>release_status: reviewed</code> even though the case is present in the public repository and the source registry records external publication. Reconcile this metadata through the same versioned process.</p>
+<h2 id="research-source-audit-scope-of-this-review">Scope of this review</h2>
+<p>The review read published case documentation and recomputed file hashes. It did not rerun the experiments, validate a current dependency inventory, or reassess vendor patch coverage. No private research record, raw evidence, withheld case or manuscript text was copied into the handbook.</p></section><section class="chapter" id="remaining-work"><h1 id="remaining-work-remaining-work-and-acceptance-criteria">Remaining work and acceptance criteria</h1>
 <p>The four core security articles and five supporting passages have been updated. The lab has six passed runtime cases and one inconclusive case. The following work remains; the completed source revision should not be confused with a validated robot deployment.</p>
 <table>
 <thead>
@@ -272,7 +281,7 @@ figure img { max-height: 6.5in; }
 <tr>
 <td>5</td>
 <td>Complete the publication checks.</td>
-<td>A successful remote CI run and, after a publishing target is chosen, a deployed commit and PDF hash matching the approved revision. Local site/browser checks are complete; the current work has not been pushed or deployed.</td>
+<td>A dated reconciliation of the six public research README checksum mismatches, a successful remote CI run and, after a publishing target is chosen, a deployed commit and PDF hash matching the approved revision. Local site/browser checks are complete; the current work has not been pushed or deployed.</td>
 </tr>
 <tr>
 <td>6</td>
@@ -282,4 +291,4 @@ figure img { max-height: 6.5in; }
 </tbody>
 </table>
 <p>Additional middleware/platform trials are conditional on the deployment choice: Lyrical, Cyclone DDS, Zenoh and cross-vendor combinations were not runtime-tested here. They should not delay the documented Jazzy/Fast DDS teaching exercise unless the project needs them.</p>
-<p>The next technical step is to close the independent-authority evidence gap. A real robot model and its bounded validation plan follow once the target platform and mission are known.</p></section></body></html>
+<p>Before publication, reconcile the public research writeup checksums without rewriting historical evidence. The next technical step is to close the independent-authority evidence gap. A real robot model and its bounded validation plan follow once the target platform and mission are known.</p></section></body></html>

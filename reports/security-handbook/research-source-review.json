@@ -1,0 +1,103 @@
+{
+  "repository": "Gh0stlyKn1ght/ROS2XRESEARCH",
+  "commit": "30ce3dd0eb22b384f010e5f9679e459517be6965",
+  "reviewed_at": "2026-10-20",
+  "method": "Recomputed repository-root-relative published checksum entries from checked-out Git bytes; no case harness executed.",
+  "cases": [
+    {
+      "case": "CVE-2019-15136",
+      "entries": 26,
+      "errors": [
+        {
+          "path": "cases/CVE-2019-15136/README.md",
+          "error": "hash mismatch"
+        }
+      ],
+      "manifest_sha256": "f9607f7fbade489b7c929c754aca76a61160f569e0f352e62728ba131173fce2",
+      "readme_current_sha256": "340e869a52aaf19da0efed0e083da145b1d54b9287bc7819429bfd2d1711c6ef",
+      "readme_recorded_sha256": "b8b3a9793b5e923262029ba841186240549b305a6be70630f7f8287322241a0c",
+      "recorded_hash_matches_pre_editorial_version": true,
+      "metadata_release_status": "published"
+    },
+    {
+      "case": "CVE-2023-39948",
+      "entries": 21,
+      "errors": [
+        {
+          "path": "cases/CVE-2023-39948/README.md",
+          "error": "hash mismatch"
+        }
+      ],
+      "manifest_sha256": "9c6b5fdc1a851fa6eaadb51371bd01c54f1b9d89b3986c441e2033d028bdf990",
+      "readme_current_sha256": "df57ee631c4ade0935e31c15b1ee4df2f5726a29630fa5ca03e39401c62e3a01",
+      "readme_recorded_sha256": "95b1309bd60250d09a9d839fd6fa9bc6e8a424e510976a622211f110fb192dba",
+      "recorded_hash_matches_pre_editorial_version": true,
+      "metadata_release_status": "reviewed"
+    },
+    {
+      "case": "CVE-2023-50257",
+      "entries": 31,
+      "errors": [
+        {
+          "path": "cases/CVE-2023-50257/README.md",
+          "error": "hash mismatch"
+        }
+      ],
+      "manifest_sha256": "99d3fe69071007cec4b9204b980112ca2a3d861ec4ff0229fd144dbe7674d637",
+      "readme_current_sha256": "9ae539af666aff487f86d586edea1e8e347be5ddc278c7307c2e57840553cab4",
+      "readme_recorded_sha256": "49bad3ee7cb8613db11ba1475891045d4c619cbdafee445dbf654a7458aada4d",
+      "recorded_hash_matches_pre_editorial_version": true,
+      "metadata_release_status": "published"
+    },
+    {
+      "case": "CVE-2024-28231",
+      "entries": 28,
+      "errors": [
+        {
+          "path": "cases/CVE-2024-28231/README.md",
+          "error": "hash mismatch"
+        }
+      ],
+      "manifest_sha256": "89d17a66f95dc7c2b4175e3eca484dc0dae4d3c4ef82f7ee9734455c78274906",
+      "readme_current_sha256": "7476940ef776dc0f53fd79dfeabf8fddd196036e0cc0ad6cfb1c3a29a3a71354",
+      "readme_recorded_sha256": "b7aab8ac9f0716b47c75e6083017a209e76d445e0acc404f8ed129fde31303d6",
+      "recorded_hash_matches_pre_editorial_version": true,
+      "metadata_release_status": "published"
+    },
+    {
+      "case": "CVE-2025-62799",
+      "entries": 30,
+      "errors": [
+        {
+          "path": "cases/CVE-2025-62799/README.md",
+          "error": "hash mismatch"
+        }
+      ],
+      "manifest_sha256": "0f3cb190dd8898dd3a1e3e0439a2f848af0a1bafab8d3cf8b9e39d7fc0cef3d4",
+      "readme_current_sha256": "d767022d3e40c02c90b2fda996df26e5705813fe355dc2ae7d3b20c09d077a71",
+      "readme_recorded_sha256": "fc3083d795fc4fb22e87fa0a30e5e812a0de193a1ab7f592bba52c01a8fc9894",
+      "recorded_hash_matches_pre_editorial_version": true,
+      "metadata_release_status": "published"
+    },
+    {
+      "case": "CVE-2026-45097",
+      "entries": 16,
+      "errors": [
+        {
+          "path": "cases/CVE-2026-45097/README.md",
+          "error": "hash mismatch"
+        }
+      ],
+      "manifest_sha256": "f5a32d60b33e496d554f9c902fb056eed16b92fa6528d76ddc355273bba6f366",
+      "readme_current_sha256": "c4a3ece3d80a80da4caa2e8d85d2a851bb3c8e9f9985320485fa6bded41f70a5",
+      "readme_recorded_sha256": "4d6358347940c762a801d3c444b3ca296bab23dd2d13bd3b39ecc21ee26378a1",
+      "recorded_hash_matches_pre_editorial_version": true,
+      "metadata_release_status": "published"
+    }
+  ],
+  "entries_verified": 146,
+  "errors": 6,
+  "editorial_commit": "e3985a8",
+  "research_runtime_tests_rerun": false,
+  "private_material_included": false
+}

@@ -1,13 +1,13 @@
 {
   "edition": "2026-10-20",
   "page_counts": {
-    "security-handbook": 41,
-    "update-summary": 8,
+    "security-handbook": 44,
+    "update-summary": 9,
     "trust-boundaries-landscape": 1
   },
   "font_embedding": "passed",
   "tagged_pdf": true,
-  "source_hashes_verified": 79,
+  "source_hashes_verified": 82,
   "archived_originals_verified": 4,
   "policy_boundary_tests": 8,
   "render_overflows": 0,

@@ -5,11 +5,11 @@
   "historical_baseline_revision": "93a415bf928751d37fce6f83215c521658e20c93",
   "documents": {
     "security-handbook": {
-      "pages": 41,
+      "pages": 44,
       "overflow_flags": []
     },
     "update-summary": {
-      "pages": 8,
+      "pages": 9,
       "overflow_flags": []
     },
     "trust-boundaries-landscape": {
@@ -62,7 +62,7 @@
     },
     {
       "path": "reports/security-handbook/changes.md",
-      "sha256": "627b205ec7a6a67a27620de073aa7b44409789eaec8102cd3108ba2eb035362d"
+      "sha256": "a8b724e08bdafd675b55ea5b2c35c005f63c56e5b27180ed1e2834a19c671b33"
     },
     {
       "path": "reports/security-handbook/technology-choices.md",
@@ -78,7 +78,19 @@
     },
     {
       "path": "reports/security-handbook/remaining-work.md",
-      "sha256": "41df3097aa8171fe6b7b87b17cd6c3a23a72d2cc599ce09d4763e88f856189fd"
+      "sha256": "46a7b0221a5f2aa5287f8c8455f09fcf3319cf52b90789fbdb7edd71a80b4c5c"
+    },
+    {
+      "path": "reports/security-handbook/research-case-studies.md",
+      "sha256": "622cc5daf36a98d7dab03b4d88133fd135d7001b099d3fe246e50c2f6e1bcbcc"
+    },
+    {
+      "path": "reports/security-handbook/research-source-audit.md",
+      "sha256": "f16a1dc5e725e7851c5cf8d1847b304d6c7e5be64e80430a89cd9b62f4845308"
+    },
+    {
+      "path": "reports/security-handbook/research-source-review.json",
+      "sha256": "1797753a12f96a4a4add4535e9e42fa123888fcb06827c4edb11767d0c28db88"
     },
     {
       "path": "examples/security-lab/README.md",
@@ -170,7 +182,7 @@
     },
     {
       "path": "img/security/trust-boundaries.pdf",
-      "sha256": "1293d6c3371719b5def74ac098d95866b77ffa12025aa2e5bc6c576377a0f6a8"
+      "sha256": "a95452cd680a91e3d217cf59fe0db6709040cf0f380db4bc9b9e1a687fa061df"
     },
     {
       "path": "img/security/trust-boundaries.svg",
@@ -270,7 +282,7 @@
     },
     {
       "path": "tools/security-handbook/build.py",
-      "sha256": "edbbee4ec40f1dd07f0ce90100f97a75214ae6d014bcba0814dc37e87c72894d"
+      "sha256": "3a58a3cca89e46551c1137e8b537eb89869770308ac02f638762d93dd5fe4d42"
     },
     {
       "path": "tools/security-handbook/requirements.txt",
