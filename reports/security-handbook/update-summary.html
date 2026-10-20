@@ -1,0 +1,258 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="author" content="Juan Carlos Nevarez · Gh0stlyKn1ght"><meta name="description" content="October 2026 revised ROS 2 security handbook"><title>ROS 2 Security — Revision, Validation and Technology Choices</title><style>
+@page { size: Letter; margin: .65in .65in .7in;
+ @top-left { content: "ROS 2 · Revised security handbook · October 2026"; font: 8pt "DejaVu Sans"; color: #444; }
+ @bottom-left { content: "Juan Carlos Nevarez · Gh0stlyKn1ght"; font: 8pt "DejaVu Sans"; }
+ @bottom-right { content: counter(page) " / " counter(pages); font: 8pt "DejaVu Sans"; }
+}
+@page atlas { size: Letter landscape; margin: .5in; }
+* { box-sizing: border-box; }
+html { background: white; color: black; }
+body { font-family: "DejaVu Sans", sans-serif; font-size: 10pt; line-height: 1.42; margin: 0; }
+h1 { font-size: 23pt; line-height: 1.2; margin: 14pt 0; }
+h2 { font-size: 16pt; margin: 18pt 0 8pt; }
+h3 { font-size: 12pt; margin: 14pt 0 6pt; }
+h4,h5,h6 { font-size: 10.5pt; margin: 12pt 0 5pt; }
+h1,h2,h3,h4,h5,h6 { break-after: avoid; }
+p,li { orphans: 3; widows: 3; }
+p { margin: 6pt 0; }
+a { color: black; text-decoration: underline; overflow-wrap: anywhere; }
+code { font-family: "DejaVu Sans Mono", monospace; font-size: .86em; overflow-wrap: anywhere; }
+pre { font-family: "DejaVu Sans Mono", monospace; font-size: 8pt; line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere; border-left: 1pt solid #888; padding: 6pt; }
+blockquote { border-left: 2pt solid #888; margin: 10pt 0; padding-left: 12pt; }
+table { border-collapse: collapse; width: 100%; table-layout: fixed; font-size: 8.8pt; margin: 10pt 0; }
+th,td { border: .5pt solid #666; padding: 5pt; vertical-align: top; overflow-wrap: anywhere; }
+th { text-align: left; font-weight: bold; background: white; }
+thead { display: table-header-group; }
+img { max-width: 100%; height: auto; }
+figure { margin: 12pt 0; break-inside: avoid; }
+figure img { display: block; margin: auto; max-height: 7.4in; object-fit: contain; }
+figcaption { font-size: 8.5pt; margin: 5pt 0; }
+ul,ol { padding-left: 19pt; }
+.cover { break-after: page; padding-top: .65in; }
+.cover .kicker { font-size: 12pt; letter-spacing: .05em; }
+.cover .credit { margin-top: 24pt; font-size: 13pt; }
+.notice { border: 1pt solid black; padding: 10pt; margin: 12pt 0; }
+.chapter { break-before: page; }
+.record { margin: 14pt 0; border-top: 1pt solid #555; padding-top: 5pt; }
+.record h4 { font-size: 11pt; }
+.field { margin: 7pt 0; }
+.field-label { display: block; font-weight: bold; break-after: avoid; }
+.field p:first-child { margin-top: 2pt; }
+.small { font-size: 8.5pt; }
+.atlas-cover,.atlas-page { page: atlas; break-after: page; }
+.atlas-page img { display: block; max-width: 10in; max-height: 5.65in; margin: auto; object-fit: contain; }
+.atlas-page h2 { margin-top: 0; }
+.atlas-page p { font-size: 8.5pt; }
+.license { font: 8pt "DejaVu Sans Mono"; white-space: pre-wrap; overflow-wrap: anywhere; }
+@media screen { body { max-width: 940px; padding: 32px; margin: auto; } .atlas-page { border-top: 1px solid; margin-top: 30px; } }
+
+@page :first { @top-left { content: none; } }
+.cover h1 { font-size: 29pt; }
+.source-credit { border-left: 2pt solid black; padding-left: 10pt; font-size: 9pt; }
+.threat-record { border-top: 1pt solid black; margin-top: 14pt; padding-top: 5pt; }
+.threat-record dt { font-weight: bold; break-after: avoid; margin-top: 7pt; }
+.threat-record dd { margin-left: 0; margin-bottom: 5pt; }
+figure img { max-height: 6.5in; }
+.diagram-sheet { page: atlas; }
+.diagram-sheet img { max-height: 5.8in; width: 100%; object-fit: contain; }
+</style></head><body><section class="chapter" id="change-record"><h1 id="change-record-october-2026-security-revision">October 2026 security revision</h1>
+<p><strong>Juan Carlos Nevarez · Gh0stlyKn1ght</strong> · github.com/Gh0stlyKn1ght</p>
+<p>This edition <strong>changes the four security article sources</strong>. It is a technical revision beyond the earlier extraction/report. Original author credits and exact historical sources remain available. The updated handbook is the current reading path; the earlier 139-page reader remains a historical reference.</p>
+<table>
+<thead>
+<tr>
+<th>Review finding</th>
+<th>Change made</th>
+<th>Remaining validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F01 · Keystore path</td>
+<td>Corrected to the root containing <code>enclaves/</code>; startup and missing-path cases observed.</td>
+<td>Repeat on the target deployment.</td>
+</tr>
+<tr>
+<td>F02 · STRIDE error</td>
+<td>Corrected Information Disclosure and added an evidence-aware method.</td>
+<td>Model review against an actual mission.</td>
+</tr>
+<tr>
+<td>F03 · Interoperability promise</td>
+<td>Replaced with distribution/vendor scope and tested-combination requirements.</td>
+<td>A separately recorded trial for each required combination.</td>
+</tr>
+<tr>
+<td>F04 · Ambiguous SROS enabled field</td>
+<td>Current records name prerequisites, controls, evidence and residual risk.</td>
+<td>Runtime observations; historical table legend stays archived.</td>
+</tr>
+<tr>
+<td>F05 · Mixed identity/hardware/signing roles</td>
+<td>Separated DDS credentials, host/process boundaries, hardware protection and update signing.</td>
+<td>Platform-specific key loading, recovery and revocation tests.</td>
+</tr>
+<tr>
+<td>F06 · Crystal baseline</td>
+<td>Current non-actuating Jazzy/DDS exercise; separate Lyrical platform decision. Historical robot models archived.</td>
+<td>Target hardware and package compatibility.</td>
+</tr>
+<tr>
+<td>F07 · DDS standard</td>
+<td>Added 1.2 reference while retaining the distinction from actual implementation support.</td>
+<td>Vendor-specific feature/standard matrix.</td>
+</tr>
+<tr>
+<td>F08 · Transport scope</td>
+<td>DDS-specific recipe labeled; Zenoh configuration and bridges discussed separately.</td>
+<td>Zenoh/bridge deployment tests if selected.</td>
+</tr>
+<tr>
+<td>F09 · Scores/evidence</td>
+<td>Added 8 structured threat records with owners, prerequisites and residual risk. Old DREAD/RVSS scores remain historical.</td>
+<td>Deployment-specific likelihood/impact and accountable owners.</td>
+</tr>
+<tr>
+<td>F10 · Proposed claims</td>
+<td>Added explicit evidence states, runtime logs and result templates. Six ROS cases passed.</td>
+<td>Separate-authority rejection evidence remains inconclusive.</td>
+</tr>
+<tr>
+<td>Print layout</td>
+<td>New editable vector figure and portrait updated handbook.</td>
+<td>Physical printer proof remains absent.</td>
+</tr>
+</tbody>
+</table>
+<p>Additional material includes a full lab recipe, restrictive policy, offline schema/XSLT generation and semantic grant checks, eight boundary tests, non-overwriting provisioning script, version capture, and technology recommendations. All five supporting articles now clarify the relevant security boundary: enclave commands, participant mapping, action names, the historical DDS overview, and the network-flow API discussion.</p>
+<p>The follow-up repaired the served OAuth surface, pinned the Jekyll build, corrected the fork URL/base path, and checked the site in Chromium. A manual Pages workflow is prepared; publication is separately tracked. This does not imply a current CVE audit, robot deployment or hardware assessment.</p></section><section class="chapter" id="runtime-results"><h1 id="runtime-results-runtime-and-publication-validation">Runtime and publication validation</h1>
+<p><strong>Juan Carlos Nevarez · Gh0stlyKn1ght</strong> · October 20, 2026.</p>
+<h2 id="runtime-results-what-was-actually-run">What was actually run</h2>
+<p>The non-actuating lab was executed using Ubuntu 24.04 Noble userspace and official ROS Jazzy packages in a private directory on the Kali workstation. Bubblewrap supplied separate user, PID and network namespaces. Only loopback was enabled for the communication tests, and the repository was mounted read-only. No ROS packages were installed into the host OS and no robot was attached.</p>
+<p>The Ubuntu root image matched its official SHA-256 manifest; its GPG signature was not independently checked. The private image's <code>staff</code> group was mapped to namespace GID 0 to allow a fontconfig package post-installation step under the single-GID mapping. This was an execution environment, not a test of host isolation, a stock Ubuntu boot, or a hardened container product.</p>
+<p>The installed baseline included <strong>Fast DDS 2.14.7</strong>, <strong>rmw_fastrtps_cpp 8.4.4</strong>, and <strong>SROS 2 0.13.6</strong>. Exact Debian package versions, the host kernel, selected settings, public runtime-artifact hashes, and sanitized logs are retained in <code>runtime-evidence/</code>. Authority keys and participant private keys remain outside the repository.</p>
+<h2 id="runtime-results-observed-ros-cases">Observed ROS cases</h2>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Observation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorized pair</td>
+<td>Seven messages published and received during the observation window; both participants stayed running.</td>
+<td>Pass.</td>
+</tr>
+<tr>
+<td>Missing enclave</td>
+<td>Initialization failed without an artificial test shutdown; exit 250.</td>
+<td>Pass.</td>
+</tr>
+<tr>
+<td>Forbidden topic remap</td>
+<td>Publisher creation failed; no application messages published; exit 250.</td>
+<td>Pass.</td>
+</tr>
+<tr>
+<td>Wrong identity profile</td>
+<td>The talker executable under the listener identity failed to initialize its allowed profile; exit 250.</td>
+<td>Pass, for whole-profile rejection.</td>
+</tr>
+<tr>
+<td>Focused listener publishing probe</td>
+<td>The listener node was constructed successfully, then <code>/chatter</code> writer creation was explicitly denied by Fast DDS; probe exit 2.</td>
+<td>Pass, for application write denial.</td>
+</tr>
+<tr>
+<td>Independently generated authority</td>
+<td>Talker published seven messages; listener received zero. Both stayed running, but no explicit authentication rejection appeared in default logs.</td>
+<td><strong>Inconclusive</strong> for the claimed rejection mechanism.</td>
+</tr>
+<tr>
+<td>Authorized control repeated afterward</td>
+<td>Seven messages published and received after the negative cases.</td>
+<td>Pass.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Six of seven ROS cases passed. The complete suite is not reported as passing.</strong> The separate-authority observation meets the no-delivery expectation but does not by itself establish why delivery stopped.</p>
+<p>A supplementary native Fast DDS probe recorded <code>AUTHENTICATION_ACCEPTED</code> for the trusted peer. The same probe with the independently created authority recorded neither acceptance nor rejection in its eight-second window. That result is retained, not converted into a rejection claim. Further discovery/handshake instrumentation is needed before closing this evidence gap.</p>
+<p>The actual permissions XML generated by the installed SROS 2 package also passed the exact two-grant checks used by the offline example; see <code>runtime-permission-check.json</code>.</p>
+<p>The two runtime enclave keys had mode <code>0600</code> in this environment. That checks group/other mode bits; it does not establish that privileged code, same-process code, mounts, or a different deployment account cannot access them.</p>
+<h2 id="runtime-results-reproduce-the-software-tests">Reproduce the software tests</h2>
+<p>On a prepared Jazzy host, provision two new lab directories using the documented setup script. Then run the runner with their separate keystores and a new output directory:</p>
+<pre><code class="language-sh">python3 examples/security-lab/run_runtime.py \
+  --keystore /absolute/first/keystore \
+  --untrusted-keystore /absolute/second/keystore \
+  --output /absolute/new-results-directory
+</code></pre>
+<p>Run only on a non-actuating lab system. The runner uses domain 42 and localhost discovery, scopes shutdown to the processes it starts, refuses to reuse an output directory, and returns a nonzero status if any case fails or is inconclusive. Review the logs and version manifest before comparing results across machines.</p>
+<p>The optional <code>authentication_probe.cpp</code> targets the Fast DDS 2.14 API and requires that version's headers/libraries and a C++ compiler. Its native callback observations are separate from the ROS application delivery cases; it does not replace them.</p>
+<h2 id="runtime-results-website-checks">Website checks</h2>
+<p>The site was built with Jekyll 4.4.1 and a committed dependency lockfile. Its fork URL and <code>/design</code> base path replace the inherited upstream domain configuration. The public site uses static navigation: inherited OAuth/token-storage scripts, third-party analytics, and the old login route are excluded from the served output. This is a focused repair of the published surface, not a full dependency or vulnerability audit.</p>
+<p>All four revised security pages and the landing page loaded in Chromium. A static sweep checked 131 local links/assets across those pages. PDF downloads, the vector figure, and an exact historical source download returned successfully. No JavaScript errors, failed assets, or mobile horizontal overflow were observed.</p>
+<p>The historical sources retain front matter and Liquid snippets. The site build excludes them from Jekyll processing and copies them as exact downloads afterward; this prevents archived permalinks or includes from replacing the revised pages.</p>
+<p>Publication is separately tracked. A local build/browser check does not prove a GitHub Pages deployment. The Pages workflow is manual, and deployment verification must compare its source commit and handbook hash with <code>site-build.json</code> after publication.</p>
+<h2 id="runtime-results-printer-proof-and-remaining-limits">Printer proof and remaining limits</h2>
+<p>Two one-page proofs were submitted to the connected HP LaserJet: a portrait lab-command page and the landscape diagram. CUPS reported both jobs completed. Physical orientation, clipping and readability still need the user's observation; spool completion is not paper verification.</p>
+<p>Still unverified: any physical robot, actuator safety, revocation/expiry and recovery behavior, hardware-backed keys, privileged-host isolation, bounded overload behavior, and packet-level confidentiality. The separate-authority case remains inconclusive as described above. No new vulnerability assessment or compliance conclusion is claimed.</p></section><section class="chapter" id="technology"><h1 id="technology-libraries-and-technology-choices">Libraries and technology choices</h1>
+<p><strong>Juan Carlos Nevarez · Gh0stlyKn1ght</strong> · Reviewed October 20, 2026.</p>
+<p>Use a small stack with clear boundaries: SROS 2 for DDS identity/policy material, a reviewed XML check for the example policy, Graphviz for editable vector diagrams, and WeasyPrint for predictable paper output. The choices below distinguish tools used in this edition from deployment options that need a target-system trial.</p>
+<h2 id="technology-adopted-in-this-edition">Adopted in this edition</h2>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>Purpose and reason</th>
+<th>Limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SROS 2 policy 0.2.0</td>
+<td>ROS-oriented privileges and a path to signed DDS permission artifacts. The offline example uses a pinned upstream schema and transform.</td>
+<td>A valid policy and signed file still need actual middleware enforcement tests.</td>
+</tr>
+<tr>
+<td>Python + lxml</td>
+<td>Schema validation, the upstream XSLT, exact grant assertions and input-boundary checks. Schema resolution is local; DTDs and XInclude are rejected for this example.</td>
+<td>The checker accepts this defined format, not arbitrary external XML/XSLT.</td>
+</tr>
+<tr>
+<td>Graphviz DOT → SVG/PDF</td>
+<td>Editable architecture source and sharp monochrome diagrams on paper. The build records the installed tool version.</td>
+<td>Diagram boundaries are design claims until their controls are verified.</td>
+</tr>
+<tr>
+<td>Markdown + WeasyPrint</td>
+<td>Source-controlled chapters, paged CSS, bookmarks, embedded fonts and US Letter output. Keep the tested 69.0 renderer pinned for this edition.</td>
+<td>Library version alone does not establish PDF accessibility or printing correctness.</td>
+</tr>
+<tr>
+<td>JSON threat register and result template</td>
+<td>Stable IDs, prerequisites, owners, evidence states and residual-risk notes, rendered into printable records.</td>
+<td>No automatic risk score substitutes for a deployment-specific judgment.</td>
+</tr>
+<tr>
+<td>Poppler tools</td>
+<td>Inspect every PDF page size, embedded fonts, extracted text and record coverage.</td>
+<td>A rendered PDF check is not physical printer evidence.</td>
+</tr>
+</tbody>
+</table>
+<p>Primary documentation: <a href="https://github.com/ros2/sros2">SROS 2</a>, <a href="https://lxml.de/resolvers.html">lxml resolution and XSLT access control</a>, <a href="https://graphviz.org/docs/outputs/svg/">Graphviz SVG</a>, and <a href="https://doc.courtbouillon.org/weasyprint/stable/common_use_cases.html#pdf">WeasyPrint PDF guidance</a>. The WeasyPrint documentation describes newer releases too; this package records what it actually used. A future PDF/UA export needs semantic review and an independent conformance check before claiming accessibility compliance.</p>
+<h2 id="technology-middleware-and-platform-decisions">Middleware and platform decisions</h2>
+<p><strong>For the included exercise:</strong> use Jazzy on Ubuntu 24.04 with <code>rmw_fastrtps_cpp</code>. This keeps the commands and policy aligned with a reviewed official tutorial and the pinned Jazzy transformation. Capture installed package versions; do not infer package versions from the ROS distribution name. The isolated run recorded six passed ROS cases and one inconclusive separate-authority case; consult the runtime observations before relying on a particular claim.</p>
+<p><strong>For a new long-lived robot:</strong> evaluate Lyrical on Ubuntu 26.04 when its hardware/application dependencies are supported. Lyrical's official support horizon is May 2031; Jazzy remains listed through May 2029. The decision depends on drivers, vendor support, package availability, and a measured migration run. See the <a href="https://github.com/ros2/ros2_documentation/blob/rolling/source/Releases.rst">official release table</a> and <a href="https://github.com/ros2/ros2_documentation/blob/rolling/source/Releases/lyrical/supported-platforms.rst">Lyrical platform matrix</a>.</p>
+<p><strong>Fast DDS</strong> is a suitable starting point for this DDS-focused lab. <strong>Cyclone DDS</strong> is a credible alternate implementation for a separately tested deployment; both document security plugins and signed governance/permissions. Neither is declared “more secure” here, and no performance benchmark was run. Choose based on supported packaging, required features, operational evidence and vendor support. The Jazzy tutorial does not support secure cross-vendor communication. Sources: <a href="https://fast-dds.docs.eprosima.com/en/latest/fastdds/security/security.html">Fast DDS security</a>, <a href="https://cyclonedds.io/docs/cyclonedds/latest/security.html">Cyclone DDS security</a>, and <a href="https://github.com/ros2/ros2_documentation/blob/jazzy/source/Tutorials/Advanced/Security/Introducing-ros2-security.rst">Jazzy tutorial</a>.</p>
+<p><strong>Zenoh</strong> is an option when its routing/topology model fits the application. The current <code>zenoh_security_tools</code> can generate session configs using SROS 2 policy and keystore material. Its router/session settings and bridge boundaries need their own review; switching <code>RMW_IMPLEMENTATION</code> is not a complete migration of DDS security. Source: <a href="https://github.com/ros2/rmw_zenoh/tree/rolling/zenoh_security_tools">official Zenoh security tools</a>. This option is documented, not installed or validated in this package.</p>
+<h2 id="technology-useful-next-stage-tools">Useful next-stage tools</h2>
+<ul>
+<li><strong>OWASP Threat Dragon desktop:</strong> useful when several people want a visual data-flow editor with threat/remediation records and local files. Keep the JSON register as a reviewable artifact and check export compatibility with old diagrams. It is optional; the authored DOT/SVG figure already works offline. <a href="https://www.threatdragon.com/docs/">Threat Dragon documentation</a>.</li>
+<li><strong>Syft + Grype:</strong> useful for dependency inventory and vulnerability triage of a selected deployment image/filesystem. Record tool versions, artifact digest, database age and exceptions. An SBOM is not evidence that a vulnerability is exploitable; a clean scan does not prove safety. These tools were researched, not run. <a href="https://github.com/anchore/syft">Syft</a>, <a href="https://github.com/anchore/grype">Grype</a>.</li>
+<li><strong>Cosign:</strong> useful when an actual release pipeline needs artifact-signature verification. Define the accepted signing identity/issuer or trusted key and verify the intended artifact digest. Keep this release-signing trust separate from DDS identities. No signing integration was configured. <a href="https://docs.sigstore.dev/cosign/verifying/verify/">Cosign verification</a>.</li>
+</ul>
+<p>The most useful next investment is stronger instrumentation for the inconclusive separate-authority case, followed by a small current-robot case study. Introducing more tooling before those results would not strengthen the handbook's evidence.</p></section></body></html>

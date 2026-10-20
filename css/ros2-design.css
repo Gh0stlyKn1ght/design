@@ -93,3 +93,18 @@ table, th, td {
     height: 30px;
     border-radius: 2px;
 }
+
+/* Fork navigation: static links, no OAuth/token storage or third-party scripts. */
+body { padding-top: 0; }
+.site-nav { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: center; padding: 1rem max(1rem, calc((100% - 1170px) / 2)); background: #172234; margin-bottom: 2rem; }
+.site-nav a { color: white; }
+.site-brand { font-size: 1.25em; font-weight: bold; margin-right: auto; }
+.skip-link { position: absolute; left: -10000px; }
+.skip-link:focus { position: static; display: block; padding: 1rem; background: white; }
+.sidebar-heading { font-size: 1.25em; }
+.sidebar-container aside ul { padding-left: 1.25rem; }
+.content-container img { max-width: 100%; height: auto; }
+.content-container pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.content-container table { width: 100%; }
+footer { padding-bottom: 2rem; }
+@media print { .site-nav, .sidebar-container, .skip-link { display: none; } .content-container { width: 100%; } body { background: white; color: black; } }

@@ -1,22 +1,28 @@
-title: ROS 2 Design
-description: "Distilled design documents related to the ROS 2 effort"
-
-url: http://design.ros2.org
-repo: https://github.com/ros2/design
-
-oauth_client_id: efa6dd8eae9106381720
-
+title: ROS 2 Security · Gh0stlyKn1ght
+description: ROS 2 security and threat modeling, revised by Juan Carlos Nevarez, with
+  original design-document credits preserved.
+url: https://gh0stlykn1ght.github.io
+repo: https://github.com/Gh0stlyKn1ght/design
 markdown: kramdown
 highlighter: rouge
-
 kramdown:
-   input: GFM
-
+  input: GFM
 exclude:
- - CNAME
- - config.json
- - examples
- - Gemfile
- - LICENSE
- - README.md
- - vendor
+- CNAME
+- config.json
+- examples
+- Gemfile
+- LICENSE
+- README.md
+- vendor
+- tools
+- reports/security-handbook/source-review.json
+- js
+- login.md
+- _layouts/login.html
+- Gemfile.lock
+- node_modules
+- articles/security_history
+baseurl: /design
+plugins:
+- jekyll-sitemap

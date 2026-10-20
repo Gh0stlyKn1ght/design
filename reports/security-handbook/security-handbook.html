@@ -1,0 +1,1269 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="author" content="Juan Carlos Nevarez · Gh0stlyKn1ght"><meta name="description" content="October 2026 revised ROS 2 security handbook"><title>ROS 2 Security and Threat Modeling — Revised October 2026</title><style>
+@page { size: Letter; margin: .65in .65in .7in;
+ @top-left { content: "ROS 2 · Revised security handbook · October 2026"; font: 8pt "DejaVu Sans"; color: #444; }
+ @bottom-left { content: "Juan Carlos Nevarez · Gh0stlyKn1ght"; font: 8pt "DejaVu Sans"; }
+ @bottom-right { content: counter(page) " / " counter(pages); font: 8pt "DejaVu Sans"; }
+}
+@page atlas { size: Letter landscape; margin: .5in; }
+* { box-sizing: border-box; }
+html { background: white; color: black; }
+body { font-family: "DejaVu Sans", sans-serif; font-size: 10pt; line-height: 1.42; margin: 0; }
+h1 { font-size: 23pt; line-height: 1.2; margin: 14pt 0; }
+h2 { font-size: 16pt; margin: 18pt 0 8pt; }
+h3 { font-size: 12pt; margin: 14pt 0 6pt; }
+h4,h5,h6 { font-size: 10.5pt; margin: 12pt 0 5pt; }
+h1,h2,h3,h4,h5,h6 { break-after: avoid; }
+p,li { orphans: 3; widows: 3; }
+p { margin: 6pt 0; }
+a { color: black; text-decoration: underline; overflow-wrap: anywhere; }
+code { font-family: "DejaVu Sans Mono", monospace; font-size: .86em; overflow-wrap: anywhere; }
+pre { font-family: "DejaVu Sans Mono", monospace; font-size: 8pt; line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere; border-left: 1pt solid #888; padding: 6pt; }
+blockquote { border-left: 2pt solid #888; margin: 10pt 0; padding-left: 12pt; }
+table { border-collapse: collapse; width: 100%; table-layout: fixed; font-size: 8.8pt; margin: 10pt 0; }
+th,td { border: .5pt solid #666; padding: 5pt; vertical-align: top; overflow-wrap: anywhere; }
+th { text-align: left; font-weight: bold; background: white; }
+thead { display: table-header-group; }
+img { max-width: 100%; height: auto; }
+figure { margin: 12pt 0; break-inside: avoid; }
+figure img { display: block; margin: auto; max-height: 7.4in; object-fit: contain; }
+figcaption { font-size: 8.5pt; margin: 5pt 0; }
+ul,ol { padding-left: 19pt; }
+.cover { break-after: page; padding-top: .65in; }
+.cover .kicker { font-size: 12pt; letter-spacing: .05em; }
+.cover .credit { margin-top: 24pt; font-size: 13pt; }
+.notice { border: 1pt solid black; padding: 10pt; margin: 12pt 0; }
+.chapter { break-before: page; }
+.record { margin: 14pt 0; border-top: 1pt solid #555; padding-top: 5pt; }
+.record h4 { font-size: 11pt; }
+.field { margin: 7pt 0; }
+.field-label { display: block; font-weight: bold; break-after: avoid; }
+.field p:first-child { margin-top: 2pt; }
+.small { font-size: 8.5pt; }
+.atlas-cover,.atlas-page { page: atlas; break-after: page; }
+.atlas-page img { display: block; max-width: 10in; max-height: 5.65in; margin: auto; object-fit: contain; }
+.atlas-page h2 { margin-top: 0; }
+.atlas-page p { font-size: 8.5pt; }
+.license { font: 8pt "DejaVu Sans Mono"; white-space: pre-wrap; overflow-wrap: anywhere; }
+@media screen { body { max-width: 940px; padding: 32px; margin: auto; } .atlas-page { border-top: 1px solid; margin-top: 30px; } }
+
+@page :first { @top-left { content: none; } }
+.cover h1 { font-size: 29pt; }
+.source-credit { border-left: 2pt solid black; padding-left: 10pt; font-size: 9pt; }
+.threat-record { border-top: 1pt solid black; margin-top: 14pt; padding-top: 5pt; }
+.threat-record dt { font-weight: bold; break-after: avoid; margin-top: 7pt; }
+.threat-record dd { margin-left: 0; margin-bottom: 5pt; }
+figure img { max-height: 6.5in; }
+.diagram-sheet { page: atlas; }
+.diagram-sheet img { max-height: 5.8in; width: 100%; object-fit: contain; }
+</style></head><body><section class="cover"><p class="kicker">REVISED EDITION · OCTOBER 2026</p><h1>ROS 2 Security and Threat Modeling</h1><h2>Current guidance, threat records, and a bounded lab</h2><p class="credit">Juan Carlos Nevarez · Gh0stlyKn1ght</p><p>Technical revision, security review, and additional material<br><a href="https://github.com/Gh0stlyKn1ght">github.com/Gh0stlyKn1ght</a></p><p>US Letter · portrait · actual size (100%)</p><div class="notice"><strong>This edition updates the material.</strong><p>The four security chapters have been rewritten. New content includes transport/platform scope, credential operations, a structured threat register, an offline-checked policy, and a lab with explicit expected outcomes.</p><p>Evidence: source review, offline checks, and an isolated ROS run with six passes and one inconclusive separate-authority case. No physical robot was tested. Do not treat the lab's expected outcomes as observed passes.</p></div><p class="small">Adapted from the ROS 2 design documents with original author credits retained in each chapter. Original OSRF attribution and CC BY 3.0 document context remain applicable; repository code license and vendored notices are retained. Historical source snapshots and PDFs are preserved separately. No upstream endorsement is implied.</p></section><h1>Contents</h1><ol><li><a href="#chapter-180">ROS 2 DDS-Security integration</a></li><li><a href="#chapter-181">ROS 2 Access Control Policies</a></li><li><a href="#chapter-182">ROS 2 Security Enclaves</a></li><li><a href="#chapter-183">ROS 2 Robotic Systems Threat Model</a></li><li><a href="#threat-records">Full teaching-system threat records</a></li><li><a href="#technology">Libraries and technology choices</a></li><li><a href="#lab">Bounded SROS 2 teaching lab</a></li><li><a href="#runtime-results">Runtime and publication validation</a></li><li><a href="#policy-source">Complete example policy</a></li><li><a href="#change-record">Changes and remaining validation</a></li><li><a href="#notices">Credits and license notices</a></li></ol><p>Use the PDF bookmarks for chapter navigation. The included lab and source policy are readable without following links. GitHub links to new fork files become public only when this revision is published; all source files are present in the local repository.</p><section class="chapter" id="chapter-180"><h1 id="chapter-180-ros-2-dds-security-integration">ROS 2 DDS-Security integration</h1>
+<p>Original authors: <a href="https://github.com/kyrofa">Kyle Fazzari</a></p>
+<p>2026 revision, security review, and additional material: <a href="https://github.com/Gh0stlyKn1ght">Juan Carlos Nevarez · Gh0stlyKn1ght</a></p>
+<p>Originally written: 2019-07 · Revised: 2026-10-20</p>
+<blockquote>
+<p><strong>Edition notice:</strong> This is the October 2026 fork revision. It updates the technical guidance and preserves the original author credits. The <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/articles/security_history/180_ros2_dds_security.md.txt">original article source</a> and the <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/reports/security-review/security-reference-reader.pdf">historical print reader</a> remain available for comparison. Documentation and offline checks do not establish runtime security.</p>
+</blockquote>
+<h2 id="chapter-180-goal-and-prerequisites">Goal and prerequisites</h2>
+<p>Explain which threats DDS security can address, configure enforcement deliberately, and identify controls that belong to the operating system or application.
+You should understand ROS nodes, topics, services, contexts, processes, and basic public-key certificates.
+Use the <a href="#chapter-181">access-control chapter</a> for authorization and the <a href="#chapter-182">enclaves chapter</a> for credential placement.</p>
+<p><strong>Practical question:</strong> If a participant presents a trusted certificate, should it be allowed to publish an actuator command?
+Authentication establishes an identity; permissions decide which operations it may perform, and the application still decides whether a permitted command is valid and safe.</p>
+<h2 id="chapter-180-scope-and-platform-choice">Scope and platform choice</h2>
+<p>This chapter describes <strong>DDS-based ROS 2 middleware with DDS security support</strong>.
+ROS 2 is middleware running on an operating system; it does not replace host access control, patching, network policy, or an independent safety system.</p>
+<p>Use one ROS distribution and one DDS implementation for the first exercise.
+The accompanying lab targets <strong>Ubuntu 24.04, ROS 2 Jazzy, and <code>rmw_fastrtps_cpp</code></strong>, with exact installed package versions captured by the operator.
+This configuration was exercised in the isolated Ubuntu userspace described in the <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/reports/security-handbook/runtime-observations.md">runtime observations</a>: six ROS cases passed and the separate-authority case remained inconclusive.</p>
+<p>For a new deployment, evaluate <strong>Lyrical on Ubuntu 26.04</strong> when hardware drivers and application packages support it.
+The official release table lists Lyrical support through May 2031 and Jazzy through May 2029.
+Crystal is end of life and belongs only in the historical case studies.
+Do not mix distribution-specific installation instructions or assume an existing robot can be upgraded without vendor validation.
+See the <a href="https://github.com/ros2/ros2_documentation/blob/rolling/source/Releases.rst">official release table</a> and <a href="https://github.com/ros2/ros2_documentation/blob/rolling/source/Releases/lyrical/supported-platforms.rst">Lyrical platform support</a>.</p>
+<p><code>rmw_zenoh_cpp</code> has a different configuration and trust model.
+Its security tooling can reuse SROS 2 policies and key material, but applies them through generated Zenoh session/router configurations.
+DDS governance files and these environment variables are not a universal recipe for every RMW.
+See the <a href="https://github.com/ros2/rmw_zenoh/tree/rolling/zenoh_security_tools">Zenoh security tool documentation</a>.</p>
+<h2 id="chapter-180-dds-security-properties">DDS security properties</h2>
+<p>The DDS Security architecture defines authentication, access-control, cryptographic, logging, and data-tagging plugin interfaces.
+The first three establish the main identity, authorization, and message-protection functions used here.
+Audit logging availability and data-tagging behavior depend on the vendor and build; do not infer that a usable audit trail exists because encryption is enabled.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>What it establishes</th>
+<th>What remains outside it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authentication</td>
+<td>A participant can demonstrate an identity trusted by the configured authority.</td>
+<td>Whether the holder is uncompromised or its command is appropriate.</td>
+</tr>
+<tr>
+<td>Access control</td>
+<td>Signed governance and permissions authorize configured operations.</td>
+<td>Host file access, process isolation, or command semantics.</td>
+</tr>
+<tr>
+<td>Cryptographic protection</td>
+<td>Configured DDS traffic can receive integrity/authenticity and confidentiality protection.</td>
+<td>Data after decryption, all metadata, non-DDS links, or availability under overload.</td>
+</tr>
+<tr>
+<td>Logging</td>
+<td>Supported, configured security events can aid investigation.</td>
+<td>Complete forensic evidence, retention policy, or tamper resistance by default.</td>
+</tr>
+</tbody>
+</table>
+<p>The builtin plugin names commonly used in DDS security are <code>DDS:Auth:PKI-DH</code>, <code>DDS:Access:Permissions</code>, and <code>DDS:Crypto:AES-GCM-GMAC</code>.
+The access-control name is plural <strong>Permissions</strong>.
+Use your vendor's documentation for supported algorithms, protection settings, and plugin-loading requirements; do not design a new cryptographic scheme for a tutorial.</p>
+<p>The original design cited DDS Security 1.1.
+<a href="https://www.omg.org/spec/DDS-SECURITY/1.2">OMG now publishes version 1.2</a>.
+That does not prove a particular ROS package implements every 1.2 feature.
+Record the standard basis supported by the actual middleware and avoid copying old section numbers into a new compatibility claim.</p>
+<h3 id="chapter-180-interoperability-is-a-test-obligation">Interoperability is a test obligation</h3>
+<p>The official Jazzy <a href="https://github.com/ros2/ros2_documentation/blob/jazzy/source/Tutorials/Advanced/Security/Introducing-ros2-security.rst">security setup source</a> says secure cross-vendor communication is not supported.
+Keep the same vendor for this lab.
+If a project requires a different combination, verify its support statement and test the exact versions, governance, permissions, discovery behavior, and recovery paths.
+Using standard plugin names alone is not proof that the combination works.</p>
+<h2 id="chapter-180-governance-permissions-and-identity">Governance, permissions, and identity</h2>
+<p><strong>Identity certificates</strong> bind a participant's public key to a subject trusted by the identity authority.
+<strong>Governance</strong> specifies domain/topic protection and admission behavior.
+<strong>Permissions</strong> grant operations to a certificate subject for domains and topics during a validity interval.
+Permissions need signing; editing XML without producing a matching signed permissions file does not update the runtime policy.</p>
+<p>Review governance explicitly: unauthenticated-participant admission, join access control, discovery protection, metadata protection, and payload protection.
+A participant joining a domain is not the same operation as publishing or subscribing to a particular topic.
+Inspect generated governance and permissions rather than assuming a tool's example defaults meet your deployment requirements.</p>
+<p>Neither the ROS node name, its namespace, nor <code>ROS_DOMAIN_ID</code> is an authenticated security identity.
+A domain ID separates discovery domains by convention; it is not an access-control boundary.
+An authorized process can still misuse the permissions granted to its identity.</p>
+<h2 id="chapter-180-configure-enforcement-deliberately">Configure enforcement deliberately</h2>
+<p>For a DDS RMW, set the environment in <strong>every participating terminal or service</strong>, and select an absolute enclave path separately:</p>
+<pre><code class="language-sh">export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export ROS_SECURITY_KEYSTORE="$HOME/ros2-security-lab/keystore"
+export ROS_SECURITY_ENABLE=true
+export ROS_SECURITY_STRATEGY=Enforce
+ros2 run demo_nodes_cpp talker --ros-args --enclave /security_lab/talker
+</code></pre>
+<p><code>ROS_SECURITY_KEYSTORE</code> points to the <strong>keystore root containing <code>enclaves/</code></strong>.
+The expected runtime files normally include <code>cert.pem</code>, <code>key.pem</code>, <code>identity_ca.cert.pem</code>, <code>permissions_ca.cert.pem</code>, <code>governance.p7s</code>, and <code>permissions.p7s</code>.
+The process needs read access only to its required material.</p>
+<p><code>ROS_SECURITY_ENABLE=true</code> enables the DDS security path; <code>ROS_SECURITY_STRATEGY=Enforce</code> requests failure when required security configuration cannot be established.
+Without the deliberate enforcement setting, permissive fallback can permit unsecured startup when material is missing.
+Treat a successful process launch as insufficient evidence: test authorized delivery and rejection separately.</p>
+<p><code>ROS_SECURITY_ENCLAVE_OVERRIDE</code> overrides the selected enclave path.
+It does not replace the keystore root.
+Remove an unexpected inherited override before a controlled exercise:</p>
+<pre><code class="language-sh">unset ROS_SECURITY_ENCLAVE_OVERRIDE
+</code></pre>
+<p>A CLI or daemon is another participant and needs an appropriate identity and policy.
+Use a dedicated inspection identity in a deployed system; copying a production participant's keys into an administrator's shell enlarges its trust boundary.</p>
+<h2 id="chapter-180-credential-lifecycle-and-host-controls">Credential lifecycle and host controls</h2>
+<p>Keep signing-authority private keys away from runtime robots.
+An enclave private key is still a secret even though it is inside the <code>enclaves/</code> directory.
+An SROS 2 enclave is a credential/policy grouping, not a hardware protected execution environment.</p>
+<p>Define provisioning, expiry, renewal, compromise response, backup, policy signing, clock requirements, and recovery ownership.
+For revocation or hardware-backed keys, obtain a vendor/version-specific implementation and test it.
+Do not assume an online revocation service or hardware key integration is available in every DDS security stack.
+Keep software-update signing separate from participant identity and permission signing.</p>
+<p>Run services with separate OS identities where meaningful, restrict file access and capabilities, patch supported packages, and protect remote administration.
+Middleware authentication does not stop a privileged local attacker from reading accessible keys or replacing an application binary.
+A firewall, VPN, or container can add boundaries; none substitutes for a tested participant policy.</p>
+<h2 id="chapter-180-bounded-exercise-and-evidence">Bounded exercise and evidence</h2>
+<p>Use the <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/examples/security-lab/README.md">included lab</a> on an isolated, non-actuating workstation.
+It supplies a policy, an offline schema/transform check, a setup script that refuses to overwrite a keystore, and expected positive/negative cases.
+The offline checks validate generated permission structure and scope; the ROS communication cases must be run on the selected ROS host.</p>
+<p>Produce a version manifest, a diagram, the reviewed governance and signed permissions hashes, and observations for authorized delivery, a missing enclave, an untrusted identity, and a forbidden topic.
+A silent listener alone is not evidence of authorization working; rule out networking, type, and QoS failures using the authorized control case and logs.</p>
+<p><strong>Explain back:</strong> Why can an authenticated participant be forbidden from publishing <code>/cmd_vel</code>? Why can a stolen authorized key still be dangerous when traffic is encrypted?</p>
+<p><strong>Common misconceptions:</strong> enabling security is not the same as enforcing a restrictive policy; encrypting a channel does not validate application commands; distinct node names do not isolate shared process memory.</p>
+<p><strong>Limit:</strong> the recorded software tests do not establish physical-robot safety, host isolation, revocation behavior, or packet-level confidentiality. The separate-authority result still needs stronger rejection evidence.
+Next, define the exact publish/subscribe/service/action privileges in the access-control chapter.</p>
+<h2 id="chapter-180-sources">Sources</h2>
+<ul>
+<li><a href="https://github.com/ros2/sros2">SROS 2 project</a>, using distribution branches and pinned versions.</li>
+<li><a href="https://fast-dds.docs.eprosima.com/en/latest/fastdds/security/security.html">Fast DDS security</a>.</li>
+<li><a href="https://cyclonedds.io/docs/cyclonedds/latest/security.html">Cyclone DDS security</a>.</li>
+<li><a href="https://www.omg.org/spec/DDS-SECURITY/1.1">DDS Security 1.1</a> and <a href="https://www.omg.org/spec/DDS-SECURITY/1.2">1.2</a>.</li>
+</ul></section><section class="chapter" id="chapter-181"><h1 id="chapter-181-ros-2-access-control-policies">ROS 2 Access Control Policies</h1>
+<p>Original authors: <a href="https://github.com/ruffsl">Ruffin White</a>, <a href="https://github.com/kyrofa">Kyle Fazzari</a></p>
+<p>2026 revision, security review, and additional material: <a href="https://github.com/Gh0stlyKn1ght">Juan Carlos Nevarez · Gh0stlyKn1ght</a></p>
+<p>Originally written: 2019-08 · Revised: 2026-10-20</p>
+<blockquote>
+<p><strong>Edition notice:</strong> This is the October 2026 fork revision. It updates the technical guidance and preserves the original author credits. The <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/articles/security_history/181_ros2_access_control_policies.md.txt">original article source</a> and the <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/reports/security-review/security-reference-reader.pdf">historical print reader</a> remain available for comparison. Documentation and offline checks do not establish runtime security.</p>
+</blockquote>
+<h2 id="chapter-181-goal-and-prerequisites">Goal and prerequisites</h2>
+<p>Turn a data-flow requirement into a reviewable policy and explain the difference between structural validation and runtime enforcement.
+Read the <a href="#chapter-180">DDS security chapter</a> first.
+You need basic XML knowledge and familiarity with ROS topics, services, actions, namespaces, and remapping.</p>
+<p><strong>Practical question:</strong> Can a listener identity also publish the data it is meant to read?
+Our example grants subscription to the application topic only; it separately grants the infrastructure operations needed by the chosen nodes.</p>
+<h2 id="chapter-181-access-control-model">Access-control model</h2>
+<p>Apply least privilege to the actual authenticated principal, which in a DDS deployment is associated with a participant and its enclave material.
+A ROS node name is useful for policy authoring but is not, by itself, a cryptographic principal.
+Nodes sharing a context share its participant identity and effective permissions; processes sharing memory cannot be treated as mutually isolated merely because policy profiles differ.</p>
+<p>A mandatory policy is enforced outside the application's discretionary choices, but a compromised enforcement process or privileged host can still defeat the assumed boundary.
+Document which system component is trusted to enforce each rule.</p>
+<p>Separate these representations:</p>
+<ol>
+<li><strong>Requirements:</strong> intended data flows and operations, including denied flows.</li>
+<li><strong>SROS 2 policy:</strong> named enclaves and ROS-oriented profiles.</li>
+<li><strong>DDS permissions:</strong> generated transport names, certificate subject, domains, and validity.</li>
+<li><strong>Signed runtime material:</strong> permissions and governance accepted by the middleware.</li>
+<li><strong>Evidence:</strong> actual authorized and rejected behavior on the recorded implementation.</li>
+</ol>
+<p>A schema-valid policy can still be too broad, mapped incorrectly, expired, signed by the wrong authority, or deployed to the wrong process.</p>
+<h2 id="chapter-181-policy-format-and-version">Policy format and version</h2>
+<p>The included example uses SROS 2 policy <strong>0.2.0</strong>.
+It is checked against the pinned Jazzy schema in <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/examples/security-lab/vendor/sources.json">the offline vendor bundle</a>.
+The XML below is intentionally small; the runnable lab policy additionally accounts for logging, parameter infrastructure, and time-related behavior used by the example nodes.
+Do not deploy this abbreviated fragment as a complete node policy.</p>
+<pre><code class="language-xml">&lt;policy version="0.2.0"&gt;
+  &lt;enclaves&gt;
+    &lt;enclave path="/security_lab/talker"&gt;
+      &lt;profiles&gt;
+        &lt;profile ns="/" node="talker"&gt;
+          &lt;topics publish="ALLOW"&gt;
+            &lt;topic&gt;/chatter&lt;/topic&gt;
+          &lt;/topics&gt;
+        &lt;/profile&gt;
+      &lt;/profiles&gt;
+    &lt;/enclave&gt;
+    &lt;enclave path="/security_lab/listener"&gt;
+      &lt;profiles&gt;
+        &lt;profile ns="/" node="listener"&gt;
+          &lt;topics subscribe="ALLOW"&gt;
+            &lt;topic&gt;/chatter&lt;/topic&gt;
+          &lt;/topics&gt;
+        &lt;/profile&gt;
+      &lt;/profiles&gt;
+    &lt;/enclave&gt;
+  &lt;/enclaves&gt;
+&lt;/policy&gt;
+</code></pre>
+<p>An <code>enclave</code> selects credential scope; a <code>profile</code> describes a node name and namespace for expressing resource names.
+A profile does not create an OS sandbox.
+The <code>topics</code>, <code>services</code>, and <code>actions</code> elements specify direction-specific operations.
+Confirm the exact schema and transformations shipped with the chosen SROS 2 package before adopting an example from another distribution.</p>
+<h3 id="chapter-181-direction-and-generated-resources">Direction and generated resources</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Policy operation</th>
+<th>Review question</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Publish or read data</td>
+<td><code>publish</code> / <code>subscribe</code></td>
+<td>Can this principal also write a topic it should only read?</td>
+</tr>
+<tr>
+<td>Call or provide a service</td>
+<td><code>request</code> / <code>reply</code></td>
+<td>Are both request and response transport directions correct?</td>
+</tr>
+<tr>
+<td>Use or provide an action</td>
+<td><code>call</code> / <code>execute</code></td>
+<td>Are goal, result, cancellation, feedback and status covered?</td>
+</tr>
+</tbody>
+</table>
+<p>A ROS service or action expands into more than one DDS resource.
+Review the generated permissions as well as the friendly policy.
+Changing the selected RMW, namespace, node name, or a remapped topic can change those resources.</p>
+<p>Prefer explicit names for the first lab.
+A wildcard is a deliberate grant over a set of names, including future matching names; record why that set is acceptable.
+Do not grant every resource under a prefix merely to eliminate startup errors.</p>
+<h2 id="chapter-181-xml-and-tooling-trust-boundary">XML and tooling trust boundary</h2>
+<p>The original design describes XInclude and XSLT composition.
+These features can read additional resources, so accept policies and transforms only from reviewed sources.
+This edition's example has <strong>no XInclude</strong> and no DTD/entity declarations.
+The offline checker rejects those constructs, restricts schema resolution to an explicit local file, disables network resolution, and denies transform file/network access.</p>
+<p>The pinned <code>lxml</code>-based check validates both the policy and generated DDS XML.
+It also checks actual topic direction, default denial, certificate subjects, domain scope, and absence of unrelated application resources.
+This is a useful local check, not a replacement DDS authorization engine or a generic validator for arbitrary externally supplied policy bundles.</p>
+<h2 id="chapter-181-generate-and-inspect-permissions">Generate and inspect permissions</h2>
+<p>On the selected ROS host, the lab uses <code>ros2 security create_keystore</code>, <code>create_enclave</code>, and <code>create_permission</code>.
+The setup script applies the reviewed policy to each enclave rather than leaving the broadly useful demo permissions in place.
+Use the installed command's help for supported options and verify generated validity dates.
+The offline reference transform's default dates are not an operational certificate-rotation policy.</p>
+<p>Before running a participant:</p>
+<ul>
+<li>Check the certificate subject matches the permission grant.</li>
+<li>Check the domain includes the intended lab domain and no unintended domains.</li>
+<li>Inspect allow and deny rules, especially wildcard expressions and infrastructure topics.</li>
+<li>Inspect governance admission and protection settings.</li>
+<li>Verify signatures and time validity with the chosen tools.</li>
+<li>Ensure the signed file actually deployed is the one reviewed.</li>
+</ul>
+<p>The <a href="https://github.com/ros2/ros2_documentation/blob/jazzy/source/Tutorials/Advanced/Security/Access-Controls.rst">official access-control tutorial</a> demonstrates policy signing and remap rejection.
+Keep signing keys on the provisioning system; the robot ordinarily needs runtime artifacts rather than authority private keys.</p>
+<h2 id="chapter-181-policy-changes-and-composition">Policy changes and composition</h2>
+<p>Regenerate and sign permissions after a relevant name or privilege change.
+A different enclave path does not automatically make a profile's topic names match a new namespace.
+Record the effective namespace and remappings from launch configuration.
+If components share an enclave, review the union of their permissions as the actual attack surface.</p>
+<p>Treat a policy inferred from a running graph as a starting observation.
+It can miss rarely used service calls, startup paths, faults, and dynamic operations, and can learn unnecessary or malicious behavior already present in the observed system.
+Review it against intended behavior and explicit negative requirements.</p>
+<h2 id="chapter-181-exercise-misconceptions-and-next-step">Exercise, misconceptions, and next step</h2>
+<p>Run the offline checker in the lab directory.
+Inspect the generated listener grant and identify which topics it can publish for infrastructure and which application topic it can only read.
+Then, on a ROS host, compare authorized <code>/chatter</code> delivery with a remap to <code>/not_chatter</code> using the same restricted identity.
+Record initialization rejection or forbidden endpoint behavior as observed; do not invent a uniform error message across vendors.</p>
+<p><strong>Artifact:</strong> reviewed policy, generated permissions, version manifest, and a result table with logs.</p>
+<p><strong>Explain back:</strong> Why does “valid XML” not imply least privilege? Which permissions would two components effectively have after sharing one enclave?</p>
+<p><strong>Misconceptions:</strong> authorization is not achieved by encryption alone; node names are not protected principals; default denial does not make a broad allow rule narrow; a domain ID is not a firewall.</p>
+<p><strong>Limit:</strong> offline checks and the recorded Jazzy/Fast DDS run establish the specific observed grant/startup behavior. The separate-authority rejection mechanism remains inconclusive; other deployments need their own run.
+Next, choose enclave and process boundaries before applying this policy to a robot.</p>
+<h2 id="chapter-181-sources-and-schema">Sources and schema</h2>
+<ul>
+<li><a href="https://github.com/ros2/sros2/blob/80a08ffa1bccd2de602c2acd120b209ad5f8ce83/sros2/sros2/policy/schemas/policy.xsd">Pinned SROS 2 policy schema</a>.</li>
+<li><a href="https://github.com/ros2/sros2/blob/80a08ffa1bccd2de602c2acd120b209ad5f8ce83/sros2/sros2/policy/templates/dds/permissions.xsl">Pinned permission transform</a>.</li>
+<li><a href="https://lxml.de/resolvers.html">lxml document resolution and XSLT access controls</a>.</li>
+<li><a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/articles/ros2_access_control_policies/policy.xsd">Original schema retained in this repository</a>; historical reference only, not a promise about every installed distribution.</li>
+</ul></section><section class="chapter" id="chapter-182"><h1 id="chapter-182-ros-2-security-enclaves">ROS 2 Security Enclaves</h1>
+<p>Original authors: <a href="https://github.com/ruffsl">Ruffin White</a>, <a href="https://github.com/mikaelarguedas">Mikael Arguedas</a></p>
+<p>2026 revision, security review, and additional material: <a href="https://github.com/Gh0stlyKn1ght">Juan Carlos Nevarez · Gh0stlyKn1ght</a></p>
+<p>Originally written: 2020-05 · Revised: 2026-10-20</p>
+<blockquote>
+<p><strong>Edition notice:</strong> This is the October 2026 fork revision. It updates the technical guidance and preserves the original author credits. The <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/articles/security_history/182_ros2_security_enclaves.md.txt">original article source</a> and the <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/reports/security-review/security-reference-reader.pdf">historical print reader</a> remain available for comparison. Documentation and offline checks do not establish runtime security.</p>
+</blockquote>
+<h2 id="chapter-182-goal-and-prerequisites">Goal and prerequisites</h2>
+<p>Choose an enclave scope that reflects a real trust boundary and deploy its runtime artifacts without distributing authority private keys.
+Read the <a href="#chapter-180">DDS security</a> and <a href="#chapter-181">access-control</a> chapters first.</p>
+<p><strong>Practical question:</strong> Do two different enclave paths inside one process isolate a trusted actuator component from untrusted code?
+They do not create a memory boundary.
+If one component can read another's memory or credentials, distinct participant identities cannot repair that shared-process trust assumption.</p>
+<h2 id="chapter-182-names-contexts-participants-and-processes">Names, contexts, participants, and processes</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Role</th>
+<th>Security implication</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node name / namespace</td>
+<td>Names ROS graph resources.</td>
+<td>Useful for organization; not an authenticated identity.</td>
+</tr>
+<tr>
+<td>Context</td>
+<td>ROS client-library execution scope.</td>
+<td>In the DDS mapping discussed here, associated with a participant and its credentials.</td>
+</tr>
+<tr>
+<td>DDS participant</td>
+<td>Middleware communication entity.</td>
+<td>Uses an identity and effective permissions.</td>
+</tr>
+<tr>
+<td>SROS 2 enclave</td>
+<td>Path-selected set of security artifacts and policy scope.</td>
+<td>Credential grouping; not a hardware enclave or OS sandbox.</td>
+</tr>
+<tr>
+<td>OS process / account</td>
+<td>Host execution and access-control boundary.</td>
+<td>Governs shared memory and who can read files or inspect another process.</td>
+</tr>
+</tbody>
+</table>
+<p>A process can contain multiple nodes and contexts.
+Describe the actual mapping for the selected RMW/version instead of assuming “one node, one certificate” or “one process always means one context.”
+All nodes using the same participant identity receive that identity's effective permission set.
+Shared OS privileges and shared memory can be an even wider boundary.</p>
+<h2 id="chapter-182-keystore-root-and-artifact-layout">Keystore root and artifact layout</h2>
+<p>Set <code>ROS_SECURITY_KEYSTORE</code> to the root <strong>containing</strong> <code>enclaves</code>, not to the <code>enclaves</code> directory itself.
+The latter instruction in the original article was incorrect.
+A representative provisioning layout is:</p>
+<pre><code class="language-text">keystore/
+  public/                 # authority certificates
+  private/                # authority signing keys; provisioning only
+  enclaves/
+    security_lab/
+      talker/
+        cert.pem
+        key.pem            # this identity's private key
+        identity_ca.cert.pem
+        permissions_ca.cert.pem
+        governance.p7s
+        permissions.p7s
+      listener/
+        ...
+</code></pre>
+<p>Public authority certificates establish trust; they are not secret signing keys.
+The <code>private/</code> authority directory stays off the runtime robot.
+The runtime enclave's <code>key.pem</code> is also private material and needs restrictive access.
+Do not mistake the directory name <code>enclaves</code> for permission to distribute its entire contents.</p>
+<p>A runtime deployment may contain a reduced keystore tree with only the required enclave path and certificates.
+If generated artifacts contain symlinks to <code>public/</code>, preserve the required target certificates or materialize the required copies.
+Check file readability as the actual service account before starting the process.
+Copying a broken symlink is not a successful credential deployment.</p>
+<h2 id="chapter-182-select-an-enclave-explicitly">Select an enclave explicitly</h2>
+<pre><code class="language-sh">export ROS_SECURITY_KEYSTORE="$HOME/ros2-security-lab/keystore"
+export ROS_SECURITY_ENABLE=true
+export ROS_SECURITY_STRATEGY=Enforce
+unset ROS_SECURITY_ENCLAVE_OVERRIDE
+ros2 run demo_nodes_cpp talker --ros-args --enclave /security_lab/talker
+</code></pre>
+<p>The path <code>/security_lab/talker</code> identifies the enclave within the keystore.
+It does not automatically change the ROS namespace or make the executable's node name an authenticated identity.
+<code>ROS_SECURITY_ENCLAVE_OVERRIDE</code> can override the selected path and should be tracked in service/launch configuration.</p>
+<h3 id="chapter-182-launch-configuration">Launch configuration</h3>
+<p>Use explicit enclave arguments in a reviewed launch file, for example:</p>
+<pre><code class="language-python">from launch import LaunchDescription
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        Node(
+            package='demo_nodes_cpp',
+            executable='talker',
+            arguments=['--ros-args', '--enclave', '/security_lab/talker'],
+            output='screen',
+        ),
+    ])
+</code></pre>
+<p>The surrounding service or environment supplies the keystore root, enable flag, enforcement strategy, and selected RMW.
+The snippet is illustrative and has not been executed here.
+Avoid hidden enclave overrides in included launch files.
+The original proposals for automatically pushing relative enclave paths with namespaces are design history, not behavior this edition promises is implemented.</p>
+<h2 id="chapter-182-choose-the-smallest-practical-trust-scope">Choose the smallest practical trust scope</h2>
+<p>Start with separate processes and enclave material for components with different trust or command authority.
+Use separate OS identities and restrictive key-file permissions where the host design supports them.
+A policy can describe a union of privileges for deliberately composed nodes, but it should not conceal that union.</p>
+<p>Per-robot or per-fleet identities can simplify provisioning and also enlarge the impact of key theft.
+A shared identity reduces attribution and complicates replacement of one compromised robot.
+Record the operational tradeoff rather than treating a larger enclave scope as a free simplification.</p>
+<p>Containers share a host kernel unless stronger isolation is deliberately supplied.
+Host mounts, shared IPC, excessive capabilities, and shared credentials can cross the boundary the diagram appears to draw.
+A container name or a separate enclave directory is not evidence of isolation.</p>
+<p>Hardware roots of trust and trusted execution environments are additional platform capabilities.
+Verify compatibility with the middleware's key-loading interface, provisioning workflow, and recovery design before claiming keys cannot be extracted.
+A TPM cannot by itself make a compromised authorized application safe.</p>
+<h2 id="chapter-182-credential-operations-checklist">Credential operations checklist</h2>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Required decision or artifact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Provision</td>
+<td>Identity owner, enclave path, subject, permissions, authority certificates.</td>
+</tr>
+<tr>
+<td>Deploy</td>
+<td>Required runtime files only, resolved symlinks, actual service account and file access.</td>
+</tr>
+<tr>
+<td>Renew</td>
+<td>Certificate/permission validity, clock source, rollout and rollback sequence.</td>
+</tr>
+<tr>
+<td>Compromise</td>
+<td>Isolate participant, replace credentials/policy, assess exposed keys and affected robots.</td>
+</tr>
+<tr>
+<td>Recover</td>
+<td>Restore trusted software and verify denied/authorized behavior before reconnecting.</td>
+</tr>
+<tr>
+<td>Audit</td>
+<td>Retained hashes, versions, issuance/change records and sanitized logs.</td>
+</tr>
+</tbody>
+</table>
+<p>Revocation behavior is implementation dependent.
+Test how a peer handles changed permissions and revoked or expired material, including already-established sessions and restarts.
+Document what must happen to remove access; do not promise immediate revocation from a paper policy alone.</p>
+<h2 id="chapter-182-exercise-and-explain-back">Exercise and explain-back</h2>
+<p>Draw the node → context → participant → enclave → process/account mapping for two components.
+List the files each account can read and the union of operations each identity can perform.
+Then add a third-party plugin to one process and redraw the trust boundary.</p>
+<p><strong>Artifact:</strong> mapping diagram, deployment file list, key-access review, and renewal/recovery procedure.</p>
+<p><strong>Explain back:</strong> Why is <code>key.pem</code> secret even after removing <code>private/</code>? Why does an absolute enclave path not select a ROS namespace? When would two processes still share an unsafe credential boundary?</p>
+<p><strong>Misconceptions:</strong> SROS 2 enclaves are not hardware enclaves; public certificate files are not signing authority keys; separate paths do not create separate process memory.</p>
+<p><strong>Limit:</strong> this is a reviewed design exercise, not proof of host isolation or physical hardware protection.
+Next, connect the mapping to the threat records in the threat-model chapter.</p>
+<h2 id="chapter-182-sources">Sources</h2>
+<ul>
+<li><a href="https://github.com/ros2/ros2_documentation/blob/jazzy/source/Tutorials/Advanced/Security/Introducing-ros2-security.rst">ROS security setup and keystore root</a>.</li>
+<li><a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/articles/160_ros_command_line_arguments.md#enclave-assignments">ROS command-line enclave arguments</a>.</li>
+<li><a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/articles/170_node_to_participant_mapping.md">Node-to-participant design</a>.</li>
+<li><a href="https://github.com/ros2/sros2">SROS 2 project</a>.</li>
+</ul></section><section class="chapter" id="chapter-183"><h1 id="chapter-183-ros-2-robotic-systems-threat-model">ROS 2 Robotic Systems Threat Model</h1>
+<p>Original authors: <a href="https://github.com/thomas-moulard">Thomas Moulard</a>, <a href="https://github.com/juanrh">Juan Hortala</a> <a href="https://github.com/XabierPB">Xabi Perez</a> <a href="https://github.com/olaldiko">Gorka Olalde</a> <a href="https://github.com/borkenerice">Borja Erice</a> <a href="https://github.com/o-olalde">Odei Olalde</a> <a href="https://github.com/dmayoral">David Mayoral</a></p>
+<p>2026 revision, security review, and additional material: <a href="https://github.com/Gh0stlyKn1ght">Juan Carlos Nevarez · Gh0stlyKn1ght</a></p>
+<p>Originally written: 2019-03 · Revised: 2026-10-20</p>
+<blockquote>
+<p><strong>Edition notice:</strong> This is the October 2026 fork revision. It updates the technical guidance and preserves the original author credits. The <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/articles/security_history/183_ros2_threat_model.md.txt">original article source</a> and the <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/reports/security-review/security-reference-reader.pdf">historical print reader</a> remain available for comparison. Documentation and offline checks do not establish runtime security.</p>
+</blockquote>
+<h2 id="chapter-183-goal-and-prerequisites">Goal and prerequisites</h2>
+<p>Build a threat model that connects an attacker action to an asset, a trust boundary, a proposed control, and evidence needed to assess the remaining risk.
+Read the security, policy, and enclaves chapters first.
+You should be able to describe the robot's mission and its process/network architecture.</p>
+<p><strong>Practical question:</strong> An attacker steals a legitimate participant's key. Which controls still protect the robot, and what evidence would show that they work?
+Encryption of traffic is only one part of the answer.</p>
+<h2 id="chapter-183-scope-and-edition-status">Scope and edition status</h2>
+<p>The current worked model is a <strong>non-actuating talker/listener teaching system</strong> using the selected Jazzy/DDS configuration described in the first chapter.
+It is a bounded example, not a proxy for a production robot.
+Its policy can be checked offline; live communication and safety behavior require separate evidence.</p>
+<p>The original TurtleBot 3 and MARA models used Crystal-era configurations and include third-party historical assessment results.
+Those results and the original threat catalog are preserved in the <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/articles/security_history/183_ros2_threat_model.md.txt">historical source</a> and <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/reports/security-review/security-reference-reader.pdf">historical reader</a>.
+They are not evidence that a current platform is exploitable, fixed, or safe.
+This revision replaces their role as the default implementation baseline while retaining their value as case studies.</p>
+<h2 id="chapter-183-model-the-system-before-scoring-it">Model the system before scoring it</h2>
+<p>Record the mission, operator, deployment environment, approved maintenance paths, version inventory, and exclusions.
+Separate known observations from assumptions.
+For a robot, include actuators, sensors, embedded controllers, local administration, firmware updates, cloud services, and external data providers where they actually exist.</p>
+<p>An <strong>asset</strong> is something to protect: control authority, availability, credentials, private data, software integrity, or human safety.
+An <strong>entry point</strong> accepts influence: a DDS topic, a remote shell, a dashboard, USB, a sensor, or an update pipeline.
+A <strong>trust boundary</strong> is where assumptions about identity, privilege, or enforcement change.
+A dashed box on a diagram is only meaningful when an actual control enforces it.</p>
+<h3 id="chapter-183-worked-architecture">Worked architecture</h3>
+<p><img alt="Teaching system data flows and trust boundaries" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIKICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPgo8IS0tIEdlbmVyYXRlZCBieSBncmFwaHZpeiB2ZXJzaW9uIDE0LjEuMiAoMCkKIC0tPgo8IS0tIFRpdGxlOiBTZWN1cml0eUJvdW5kYXJpZXMgUGFnZXM6IDEgLS0+Cjxzdmcgd2lkdGg9IjExMjZwdCIgaGVpZ2h0PSIzNzJwdCIKIHZpZXdCb3g9IjAuMDAgMC4wMCAxMTI2LjAwIDM3Mi4wMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CjxnIGlkPSJncmFwaDAiIGNsYXNzPSJncmFwaCIgdHJhbnNmb3JtPSJzY2FsZSgxIDEpIHJvdGF0ZSgwKSB0cmFuc2xhdGUoMTAuOCAzNjEuMzIpIj4KPHRpdGxlPlNlY3VyaXR5Qm91bmRhcmllczwvdGl0bGU+Cjxwb2x5Z29uIGZpbGw9IndoaXRlIiBzdHJva2U9Im5vbmUiIHBvaW50cz0iLTEwLjgsMTAuOCAtMTAuOCwtMzYxLjMyIDExMTUuMjEsLTM2MS4zMiAxMTE1LjIxLDEwLjggLTEwLjgsMTAuOCIvPgo8ZyBpZD0iY2x1c3QxIiBjbGFzcz0iY2x1c3RlciI+Cjx0aXRsZT5jbHVzdGVyX3Byb3Zpc2lvbmVyPC90aXRsZT4KPHBvbHlnb24gZmlsbD0id2hpdGUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS1kYXNoYXJyYXk9IjUsMiIgcG9pbnRzPSI1MjkuNjcsLTI0OC42MiA1MjkuNjcsLTM0Mi41MiA3NTQuNjcsLTM0Mi41MiA3NTQuNjcsLTI0OC42MiA1MjkuNjcsLTI0OC42MiIvPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI2NDIuMTciIHk9Ii0zMjcuMTIiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyIgZm9udC1zaXplPSIxMi4wMCI+UFJPVklTSU9OSU5HIEJPVU5EQVJZPC90ZXh0Pgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI2NDIuMTciIHk9Ii0zMTIuODciIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyIgZm9udC1zaXplPSIxMi4wMCI+U2lnbmluZyBhdXRob3JpdHkga2V5cyByZW1haW4gaGVyZTwvdGV4dD4KPC9nPgo8ZyBpZD0iY2x1c3QyIiBjbGFzcz0iY2x1c3RlciI+Cjx0aXRsZT5jbHVzdGVyX3J1bnRpbWU8L3RpdGxlPgo8cG9seWdvbiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLWRhc2hhcnJheT0iNSwyIiBwb2ludHM9IjM5My42OCwtOCAzOTMuNjgsLTIxOS4zNyA4NjYuNjcsLTIxOS4zNyA4NjYuNjcsLTggMzkzLjY4LC04Ii8+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjYzMC4xNyIgeT0iLTIwMy45NyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIiBmb250LXNpemU9IjEyLjAwIj5SVU5USU1FIEhPU1QgQk9VTkRBUlk8L3RleHQ+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjYzMC4xNyIgeT0iLTE4OS43MiIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIiBmb250LXNpemU9IjEyLjAwIj5Ib3N0IGFjY291bnQgYW5kIGZpbGUgcGVybWlzc2lvbnMgYXJlIHNlcGFyYXRlIGNvbnRyb2xzPC90ZXh0Pgo8L2c+CjwhLS0gc2lnbmVyIC0tPgo8ZyBpZD0ibm9kZTEiIGNsYXNzPSJub2RlIj4KPHRpdGxlPnNpZ25lcjwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIGQ9Ik03MzIuMzUsLTI5OC4wMkM3MzIuMzUsLTI5OC4wMiA1NTEsLTI5OC4wMiA1NTEsLTI5OC4wMiA1NDUsLTI5OC4wMiA1MzksLTI5Mi4wMiA1MzksLTI4Ni4wMiA1MzksLTI4Ni4wMiA1MzksLTI2OC42MiA1MzksLTI2OC42MiA1MzksLTI2Mi42MiA1NDUsLTI1Ni42MiA1NTEsLTI1Ni42MiA1NTEsLTI1Ni42MiA3MzIuMzUsLTI1Ni42MiA3MzIuMzUsLTI1Ni42MiA3MzguMzUsLTI1Ni42MiA3NDQuMzUsLTI2Mi42MiA3NDQuMzUsLTI2OC42MiA3NDQuMzUsLTI2OC42MiA3NDQuMzUsLTI4Ni4wMiA3NDQuMzUsLTI4Ni4wMiA3NDQuMzUsLTI5Mi4wMiA3MzguMzUsLTI5OC4wMiA3MzIuMzUsLTI5OC4wMiIvPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI2NDEuNjciIHk9Ii0yODAuMzciIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyIgZm9udC1zaXplPSIxMS4wMCI+UmV2aWV3ICsgc2lnbmluZyB3b3Jrc3RhdGlvbjwvdGV4dD4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNjQxLjY3IiB5PSItMjY2Ljg3IiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMiIGZvbnQtc2l6ZT0iMTEuMDAiPklkZW50aXR5IGFuZCBwZXJtaXNzaW9uIGF1dGhvcml0eTwvdGV4dD4KPC9nPgo8IS0tIHRhbGtlciAtLT4KPGcgaWQ9Im5vZGUyIiBjbGFzcz0ibm9kZSI+Cjx0aXRsZT50YWxrZXI8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBkPSJNODQ2LjIyLC0xNzQuODdDODQ2LjIyLC0xNzQuODcgNjYxLjEyLC0xNzQuODcgNjYxLjEyLC0xNzQuODcgNjU1LjEyLC0xNzQuODcgNjQ5LjEyLC0xNjguODcgNjQ5LjEyLC0xNjIuODcgNjQ5LjEyLC0xNjIuODcgNjQ5LjEyLC0xMzEuOTcgNjQ5LjEyLC0xMzEuOTcgNjQ5LjEyLC0xMjUuOTcgNjU1LjEyLC0xMTkuOTcgNjYxLjEyLC0xMTkuOTcgNjYxLjEyLC0xMTkuOTcgODQ2LjIyLC0xMTkuOTcgODQ2LjIyLC0xMTkuOTcgODUyLjIyLC0xMTkuOTcgODU4LjIyLC0xMjUuOTcgODU4LjIyLC0xMzEuOTcgODU4LjIyLC0xMzEuOTcgODU4LjIyLC0xNjIuODcgODU4LjIyLC0xNjIuODcgODU4LjIyLC0xNjguODcgODUyLjIyLC0xNzQuODcgODQ2LjIyLC0xNzQuODciLz4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNzUzLjY3IiB5PSItMTU3LjIyIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMiIGZvbnQtc2l6ZT0iMTEuMDAiPlRhbGtlciBwcm9jZXNzPC90ZXh0Pgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI3NTMuNjciIHk9Ii0xNDMuNzIiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyIgZm9udC1zaXplPSIxMS4wMCI+L3NlY3VyaXR5X2xhYi90YWxrZXI8L3RleHQ+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9Ijc1My42NyIgeT0iLTEzMC4yMiIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIiBmb250LXNpemU9IjExLjAwIj5BcHBsaWNhdGlvbiBncmFudDogcHVibGlzaCAvY2hhdHRlcjwvdGV4dD4KPC9nPgo8IS0tIHNpZ25lciYjNDU7Jmd0O3RhbGtlciAtLT4KPGcgaWQ9ImVkZ2UzIiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5zaWduZXImIzQ1OyZndDt0YWxrZXI8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBkPSJNNjc0LjA2LC0yNTYuMkM2ODEuMjYsLTI1MC45NSA2ODguNTcsLTI0NC45NyA2OTQuNjcsLTIzOC42MiA3MDkuOTYsLTIyMi43MyA3MjMuNjgsLTIwMi4zNSA3MzQuMDMsLTE4NC45OCIvPgo8cG9seWdvbiBmaWxsPSJibGFjayIgc3Ryb2tlPSJibGFjayIgcG9pbnRzPSI3MzYuOTgsLTE4Ni44OCA3MzguOTcsLTE3Ni40NyA3MzAuOTIsLTE4My4zNyA3MzYuOTgsLTE4Ni44OCIvPgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI3NzQuOSIgeT0iLTIzMC4wNyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIiBmb250LXNpemU9IjkuMDAiPlJlcXVpcmVkIHJ1bnRpbWUgbWF0ZXJpYWwgb25seTwvdGV4dD4KPC9nPgo8IS0tIGxpc3RlbmVyIC0tPgo8ZyBpZD0ibm9kZTMiIGNsYXNzPSJub2RlIj4KPHRpdGxlPmxpc3RlbmVyPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgZD0iTTYxMS45NywtMTc0Ljg3QzYxMS45NywtMTc0Ljg3IDQxMy4zNywtMTc0Ljg3IDQxMy4zNywtMTc0Ljg3IDQwNy4zNywtMTc0Ljg3IDQwMS4zNywtMTY4Ljg3IDQwMS4zNywtMTYyLjg3IDQwMS4zNywtMTYyLjg3IDQwMS4zNywtMTMxLjk3IDQwMS4zNywtMTMxLjk3IDQwMS4zNywtMTI1Ljk3IDQwNy4zNywtMTE5Ljk3IDQxMy4zNywtMTE5Ljk3IDQxMy4zNywtMTE5Ljk3IDYxMS45NywtMTE5Ljk3IDYxMS45NywtMTE5Ljk3IDYxNy45NywtMTE5Ljk3IDYyMy45NywtMTI1Ljk3IDYyMy45NywtMTMxLjk3IDYyMy45NywtMTMxLjk3IDYyMy45NywtMTYyLjg3IDYyMy45NywtMTYyLjg3IDYyMy45NywtMTY4Ljg3IDYxNy45NywtMTc0Ljg3IDYxMS45NywtMTc0Ljg3Ii8+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjUxMi42NyIgeT0iLTE1Ny4yMiIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIiBmb250LXNpemU9IjExLjAwIj5MaXN0ZW5lciBwcm9jZXNzPC90ZXh0Pgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI1MTIuNjciIHk9Ii0xNDMuNzIiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyIgZm9udC1zaXplPSIxMS4wMCI+L3NlY3VyaXR5X2xhYi9saXN0ZW5lcjwvdGV4dD4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNTEyLjY3IiB5PSItMTMwLjIyIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMiIGZvbnQtc2l6ZT0iMTEuMDAiPkFwcGxpY2F0aW9uIGdyYW50OiBzdWJzY3JpYmUgL2NoYXR0ZXI8L3RleHQ+CjwvZz4KPCEtLSBzaWduZXImIzQ1OyZndDtsaXN0ZW5lciAtLT4KPGcgaWQ9ImVkZ2U0IiBjbGFzcz0iZWRnZSI+Cjx0aXRsZT5zaWduZXImIzQ1OyZndDtsaXN0ZW5lcjwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIGQ9Ik01NzIuMzUsLTI1Ni4zMkM1NjMuMjksLTI1MS41NyA1NTQuNzIsLTI0NS43NSA1NDcuNjcsLTIzOC42MiA1MzMuNjYsLTIyNC40NSA1MjUuMTEsLTIwNC4wMyA1MTkuOTgsLTE4Ni4yIi8+Cjxwb2x5Z29uIGZpbGw9ImJsYWNrIiBzdHJva2U9ImJsYWNrIiBwb2ludHM9IjUyMy40MiwtMTg1LjUxIDUxNy41MiwtMTc2LjcgNTE2LjY0LC0xODcuMjYgNTIzLjQyLC0xODUuNTEiLz4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNjE4LjE3IiB5PSItMjMwLjA3IiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMiIGZvbnQtc2l6ZT0iOS4wMCI+UmVxdWlyZWQgcnVudGltZSBtYXRlcmlhbCBvbmx5PC90ZXh0Pgo8L2c+CjwhLS0gdHJhbnNwb3J0IC0tPgo8ZyBpZD0ibm9kZTQiIGNsYXNzPSJub2RlIj4KPHRpdGxlPnRyYW5zcG9ydDwvdGl0bGU+Cjxwb2x5Z29uIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS1kYXNoYXJyYXk9IjUsMiIgcG9pbnRzPSI4NTguMjIsLTcwLjkgNTQ3LjEyLC03MC45IDU0Ny4xMiwtMTYgODU4LjIyLC0xNiA4NTguMjIsLTcwLjkiLz4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNzAyLjY3IiB5PSItNTMuMjUiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyIgZm9udC1zaXplPSIxMS4wMCI+VU5UUlVTVEVEIFRSQU5TUE9SVDwvdGV4dD4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNzAyLjY3IiB5PSItMzkuNzUiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyIgZm9udC1zaXplPSIxMS4wMCI+RERTIGF1dGhlbnRpY2F0aW9uICsgcG9saWN5ICsgY29uZmlndXJlZCBwcm90ZWN0aW9uPC90ZXh0Pgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI3MDIuNjciIHk9Ii0yNi4yNSIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIiBmb250LXNpemU9IjExLjAwIj5ST1MgaW5mcmFzdHJ1Y3R1cmUgdHJhZmZpYyByZXZpZXdlZCBzZXBhcmF0ZWx5PC90ZXh0Pgo8L2c+CjwhLS0gdGFsa2VyJiM0NTsmZ3Q7dHJhbnNwb3J0IC0tPgo8ZyBpZD0iZWRnZTEiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPnRhbGtlciYjNDU7Jmd0O3RyYW5zcG9ydDwvdGl0bGU+CjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIGQ9Ik03NDAuMjgsLTExOS42M0M3MzQuNDIsLTEwNy45MiA3MjcuNDUsLTk0IDcyMS4xMiwtODEuMzMiLz4KPHBvbHlnb24gZmlsbD0iYmxhY2siIHN0cm9rZT0iYmxhY2siIHBvaW50cz0iNzI0LjI3LC03OS44IDcxNi42NiwtNzIuNDIgNzE4LC04Mi45MyA3MjQuMjcsLTc5LjgiLz4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNzU5LjMzIiB5PSItOTEuNiIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIiBmb250LXNpemU9IjkuMDAiPi9jaGF0dGVyIGRhdGE8L3RleHQ+CjwvZz4KPCEtLSBsaW1pdGF0aW9uIC0tPgo8ZyBpZD0ibm9kZTYiIGNsYXNzPSJub2RlIj4KPHRpdGxlPmxpbWl0YXRpb248L3RpdGxlPgo8cG9seWdvbiBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBwb2ludHM9IjM3OS4zNSwtNzAuOSAwLC03MC45IDAsLTE2IDM4NS4zNSwtMTYgMzg1LjM1LC02NC45IDM3OS4zNSwtNzAuOSIvPgo8cG9seWxpbmUgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgcG9pbnRzPSIzNzkuMzUsLTcwLjkgMzc5LjM1LC02NC45Ii8+Cjxwb2x5bGluZSBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBwb2ludHM9IjM4NS4zNSwtNjQuOSAzNzkuMzUsLTY0LjkiLz4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTkyLjY4IiB5PSItNTMuMjUiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyIgZm9udC1zaXplPSIxMS4wMCI+VGVhY2hpbmcgbW9kZWw6IG5vIGFjdHVhdG9ycyBvciBjbG91ZC48L3RleHQ+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE5Mi42OCIgeT0iLTM5Ljc1IiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMiIGZvbnQtc2l6ZT0iMTEuMDAiPlNlcGFyYXRlIGVuY2xhdmUgcGF0aHMgZG8gbm90IGNyZWF0ZSBtZW1vcnkgaXNvbGF0aW9uLjwvdGV4dD4KPHRleHQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTkyLjY4IiB5PSItMjYuMjUiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyIgZm9udC1zaXplPSIxMS4wMCI+RERTIGNhc2VzIG9ic2VydmVkOyBob3N0IGFuZCBzYWZldHkgYm91bmRhcmllcyBub3QgZXN0YWJsaXNoZWQuPC90ZXh0Pgo8L2c+CjwhLS0gbGlzdGVuZXImIzQ1OyZndDtsaW1pdGF0aW9uIC0tPgo8IS0tIHRyYW5zcG9ydCYjNDU7Jmd0O2xpc3RlbmVyIC0tPgo8ZyBpZD0iZWRnZTIiIGNsYXNzPSJlZGdlIj4KPHRpdGxlPnRyYW5zcG9ydCYjNDU7Jmd0O2xpc3RlbmVyPC90aXRsZT4KPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgZD0iTTY1Mi43NiwtNzEuMjRDNjI4LjIsLTg0LjQyIDU5OC40MSwtMTAwLjQxIDU3Mi42MywtMTE0LjI1Ii8+Cjxwb2x5Z29uIGZpbGw9ImJsYWNrIiBzdHJva2U9ImJsYWNrIiBwb2ludHM9IjU3MS4wOCwtMTExLjEgNTYzLjkzLC0xMTguOTIgNTc0LjQsLTExNy4yNyA1NzEuMDgsLTExMS4xIi8+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjY2Mi4xOCIgeT0iLTkxLjYiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyIgZm9udC1zaXplPSI5LjAwIj5hdXRob3JpemVkIGRlbGl2ZXJ5PC90ZXh0Pgo8L2c+CjwhLS0gYXR0YWNrZXIgLS0+CjxnIGlkPSJub2RlNSIgY2xhc3M9Im5vZGUiPgo8dGl0bGU+YXR0YWNrZXI8L3RpdGxlPgo8ZWxsaXBzZSBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBjeD0iOTkzLjY3IiBjeT0iLTE0Ny40MiIgcng9IjExMC43MyIgcnk9IjI5LjI3Ii8+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9Ijk5My42NyIgeT0iLTE1MC40NyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIiBmb250LXNpemU9IjExLjAwIj5VbnRydXN0ZWQgcGVlciAvIGlucHV0PC90ZXh0Pgo8dGV4dCB4bWw6c3BhY2U9InByZXNlcnZlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI5OTMuNjciIHk9Ii0xMzYuOTciIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyIgZm9udC1zaXplPSIxMS4wMCI+Tm8gYWNjZXB0ZWQgbGFiIGlkZW50aXR5PC90ZXh0Pgo8L2c+CjwhLS0gYXR0YWNrZXImIzQ1OyZndDt0cmFuc3BvcnQgLS0+CjxnIGlkPSJlZGdlNSIgY2xhc3M9ImVkZ2UiPgo8dGl0bGU+YXR0YWNrZXImIzQ1OyZndDt0cmFuc3BvcnQ8L3RpdGxlPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBzdHJva2UtZGFzaGFycmF5PSI1LDIiIGQ9Ik05MjguMDEsLTEyMy40MUM4ODcuMjgsLTEwOS4xNCA4MzQuNDYsLTkwLjYzIDc5MC4yLC03NS4xMiIvPgo8cG9seWdvbiBmaWxsPSJibGFjayIgc3Ryb2tlPSJibGFjayIgcG9pbnRzPSI3OTEuNDYsLTcxLjg1IDc4MC44NywtNzEuODUgNzg5LjE1LC03OC40NiA3OTEuNDYsLTcxLjg1Ii8+Cjx0ZXh0IHhtbDpzcGFjZT0icHJlc2VydmUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjkxNy42NSIgeT0iLTkxLjYiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyIgZm9udC1zaXplPSI5LjAwIj5hdHRlbXB0ZWQgY29tbXVuaWNhdGlvbjwvdGV4dD4KPC9nPgo8L2c+Cjwvc3ZnPgo="/></p>
+<p>The provisioning workstation signs identity/policy material.
+The runtime system has separate talker and listener enclave paths and processes.
+The application flow is <code>/chatter</code>; ROS infrastructure traffic must be accounted for separately.
+The network is treated as untrusted even when the exercise runs on one host.
+There are no actuators and no cloud dependencies in this model.</p>
+<table>
+<thead>
+<tr>
+<th>Boundary</th>
+<th>Assumption</th>
+<th>Control and evidence required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Provisioner → runtime</td>
+<td>Authority private keys stay on the provisioner.</td>
+<td>Deployment file inventory and service-account read checks.</td>
+</tr>
+<tr>
+<td>Process → DDS network</td>
+<td>Peers are authenticated and operations are authorized.</td>
+<td>Reviewed governance/permissions plus positive and negative runtime cases.</td>
+</tr>
+<tr>
+<td>Talker ↔ listener host resources</td>
+<td>Processes cannot freely read each other's secrets.</td>
+<td>OS identity/access design; this is not provided by enclave names.</td>
+</tr>
+<tr>
+<td>Incoming message → application</td>
+<td>Authenticated data can still be invalid.</td>
+<td>Application validation and bounded processing; the toy listener does not establish robot safety.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="chapter-183-use-stride-consistently">Use STRIDE consistently</h2>
+<p>STRIDE is <strong>Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, and Elevation of Privilege</strong>.
+The original prose incorrectly used “Integrity” for the “I”; the corrected category is Information Disclosure.
+Integrity remains an important security property, but it is not that category name.
+See <a href="https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats">Microsoft's STRIDE definitions</a>.</p>
+<p>Apply the categories to the actual data flows and stores rather than treating the acronym as a complete list of robot hazards.
+A threat can span multiple categories.
+For example, stealing a key can lead to information disclosure and spoofing, while an authorized process flooding a control path can cause denial of service.</p>
+<h3 id="chapter-183-risk-and-evidence-fields">Risk and evidence fields</h3>
+<p>Each current threat record includes an ID, attacker prerequisite, affected asset/boundary, scenario, control, verification action, owner role, treatment, evidence status, and residual-risk note.
+An owner role in this teaching model is a responsibility to assign, not a named person who has accepted it.
+Do not invent exploitation probabilities or percentages.</p>
+<p>Use likelihood rationale and mission-specific impact for deployment decisions.
+The original DREAD totals and MARA RVSS results remain historical annotations in the archive.
+For a concrete vulnerability, CVSS can supplement severity discussion; it does not replace operational risk or a robot safety assessment.
+<a href="https://www.first.org/cvss/v4.0/specification-document">FIRST's CVSS 4.0 specification</a> includes safety-related metrics, but a number alone is not a safety argument.</p>
+<p>Use these evidence states:</p>
+<ul>
+<li><strong>Proposed:</strong> a design or test case exists, but no implementation evidence is supplied.</li>
+<li><strong>Offline-checked:</strong> a file or transformation passed the named local check.</li>
+<li><strong>Runtime-observed:</strong> a recorded software run produced the stated outcome on exact versions.</li>
+<li><strong>Bench-observed:</strong> an isolated device run produced the stated outcome.</li>
+<li><strong>Robot-observed:</strong> the stated behavior was observed on the identified physical system.</li>
+<li><strong>Historical:</strong> a past assessment or design claim is retained with its original scope/date.</li>
+</ul>
+<p>“Mitigated” requires an explanation of which attack path is blocked under which assumptions and what risk remains.
+Do not convert a proposed mitigation into a completed result by changing the wording.</p>
+<h2 id="chapter-183-current-teaching-system-threat-register">Current teaching-system threat register</h2>
+<p>The canonical records are in <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/examples/security-lab/threat-register.json">threat-register.json</a>.
+Their full text is included in the updated handbook PDF.
+The summary below is an index, not a replacement for the records.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Threat and prerequisite</th>
+<th>Control / validation focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TM-001</td>
+<td>Untrusted participant attempts to inject <code>/chatter</code> data.</td>
+<td>Authentication, governance admission and restrictive grants; untrusted-keystore case.</td>
+</tr>
+<tr>
+<td>TM-002</td>
+<td>Authenticated listener attempts application publishing.</td>
+<td>Direction-specific grants and default denial; inspect generated XML and test forbidden publish.</td>
+</tr>
+<tr>
+<td>TM-003</td>
+<td>Missing or unreadable enclave material causes unsecured startup.</td>
+<td>Deliberate enable/enforce settings; startup failure case.</td>
+</tr>
+<tr>
+<td>TM-004</td>
+<td>Local attacker obtains an enclave private key.</td>
+<td>OS/file boundaries, key replacement and isolation; review actual service-account access.</td>
+</tr>
+<tr>
+<td>TM-005</td>
+<td>Authorized participant supplies excessive or invalid input.</td>
+<td>Application bounds, resource controls and recovery; bounded load tests on the selected host.</td>
+</tr>
+<tr>
+<td>TM-006</td>
+<td>Compromised update/provisioning path installs trusted malicious code or policy.</td>
+<td>Reviewed signed inputs, artifact inventory, separate signing roles and recovery.</td>
+</tr>
+<tr>
+<td>TM-007</td>
+<td>Logs/inspection reveal sensitive data or broaden access.</td>
+<td>Separate inspection identity, retention/access policy and sanitized evidence.</td>
+</tr>
+<tr>
+<td>TM-008</td>
+<td>Clock/expiry or credential change disrupts communication.</td>
+<td>Validity checks, trusted time assumptions, renewal and restart/recovery tests.</td>
+</tr>
+</tbody>
+</table>
+<p>The offline checker supplies evidence only for relevant XML structure and grant-scope assertions. The recorded runtime run additionally observed application-write denial and missing-enclave failure, chiefly TM-002 and TM-003. See the <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/reports/security-handbook/runtime-observations.md">runtime observations</a>.
+It does not execute the network attacks, establish confidentiality, or prove any robot is safe.
+Every unexecuted runtime test remains <strong>not run</strong>.</p>
+<h2 id="chapter-183-validate-claims-with-paired-cases">Validate claims with paired cases</h2>
+<p>Start with authorized communication on the same host/configuration.
+Then vary one property at a time: enclave presence, trusted authority, topic permission, or application input.
+Record exit code, sanitized logs, actual message delivery, elapsed observation window, and exact versions.
+Use logs and a positive control to distinguish rejection from a broken network or a QoS/type mismatch.</p>
+<p>For packet inspection, define which interface and flows were captured, which protection settings were enabled, and what was visible.
+Not seeing plaintext in one capture is not proof that every channel or metadata field is confidential.
+Avoid capturing unrelated users' traffic or retaining credentials in shared evidence.</p>
+<p>Tests that can affect motion belong on a separately bounded hardware test plan with an independent stop mechanism and recovery procedure.
+The provided non-actuating lab does not issue movement commands.</p>
+<h2 id="chapter-183-extend-the-model-to-an-actual-robot">Extend the model to an actual robot</h2>
+<ol>
+<li>Name the robot, firmware, OS, ROS distribution, RMW, middleware/security libraries, packages, topology and mission.</li>
+<li>Inventory operators, remote support, provisioning, cloud connections, sensors, actuators, buses and update sources.</li>
+<li>Draw data flows, stores and actual enforcement boundaries; identify safety-critical paths separately.</li>
+<li>Start from the historical threat catalog and current records, then remove irrelevant assumptions and add deployment-specific scenarios.</li>
+<li>Assign owner roles and treatment: reduce, avoid, transfer or explicitly accept with an accountable decision and review date.</li>
+<li>Pair each control with authorized and rejected cases, recovery observations, evidence location and a residual-risk statement.</li>
+<li>Revisit the model after architecture, privilege, firmware, policy, or exposure changes.</li>
+</ol>
+<h3 id="chapter-183-host-network-and-supply-chain">Host, network and supply chain</h3>
+<p>Use supported software, minimal service privileges, credential separation, reviewed network paths and a defined update process.
+Record build inputs and dependencies; an SBOM is an inventory aid, not proof that software is trustworthy.
+Verify update signatures before installation, protect signing keys, and design recovery and rollback deliberately.
+A validly signed malicious or vulnerable update remains possible when the signing/provisioning authority is compromised.</p>
+<p>ROS bridges, dashboards, VPN gateways, microcontroller agents, serial links and CAN buses each create their own boundary.
+Identify where authentication/encryption terminate and whether a bridge can republish into a more trusted domain.
+Do not assume DDS protection extends across a non-DDS link.</p>
+<h3 id="chapter-183-safety-privacy-and-optional-ai">Safety, privacy and optional AI</h3>
+<p>A robot needs appropriate command validation, stale-input handling, watchdog/degraded-mode behavior, resource limits and independent stop controls.
+Security and functional safety share some failure consequences but require their own evidence.
+The absence of a reported vulnerability is not proof that movement is safe.</p>
+<p>Record what sensor/log data is collected, who can access it, retention and deletion, and what is exported off the robot.
+If the system uses learned perception or language-model tools, model untrusted inputs, sensor deception, tool authority and output validation as additional flows.
+Do not add AI-specific controls to a system that has no such component merely to make the model look modern.</p>
+<h2 id="chapter-183-exercise-artifact-and-next-step">Exercise, artifact and next step</h2>
+<p>Use the supplied threat-record format to model one maintenance operation, such as a policy renewal or software update.
+Draw the boundary, write an attacker prerequisite, propose a control, and state exactly what observation would support the claim.
+Leave its status proposed until that evidence exists.</p>
+<p><strong>Artifact:</strong> mission/scope sheet, diagram, threat register, version manifest and evidence log.</p>
+<p><strong>Explain back:</strong> Which threats remain after enabling encryption? What changes when two components share a process? Why is a historical MARA finding not automatically a finding on your robot?</p>
+<p><strong>Misconceptions:</strong> a scanner's clean result is not a complete threat model; a risk score is not a test result; a planned control is not implemented evidence; authentication does not establish safe command semantics.</p>
+<p><strong>Limit:</strong> this edition includes documentation review, offline validation, and bounded software runtime observations. Six ROS cases passed; the separate-authority case is inconclusive. No physical robot validation was performed.
+Next, repeat the bounded lab on the target deployment and attach its observations before extending any claim to that system.</p>
+<h2 id="chapter-183-sources-and-historical-attribution">Sources and historical attribution</h2>
+<ul>
+<li><a href="https://github.com/ros2/design/blob/93a415bf928751d37fce6f83215c521658e20c93/articles/183_ros2_threat_model.md">Original ROS 2 threat model at the reviewed revision</a>.</li>
+<li><a href="https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats">Microsoft STRIDE</a>.</li>
+<li><a href="https://www.first.org/cvss/v4.0/specification-document">FIRST CVSS 4.0</a>.</li>
+<li><a href="https://www.threatdragon.com/docs/">OWASP Threat Dragon</a> for optional collaborative/local model editing.</li>
+<li><a href="#technology">Current security tooling choices</a>.</li>
+</ul>
+<p>Original threat-model authors remain credited above.
+The MARA assessment described in the archive was performed by Alias Robotics for the named historical system; this fork's revision is not a new assessment of that platform.</p></section><section class="chapter" id="threat-records"><h1>Full teaching-system threat records</h1><p>Owner roles are responsibilities to assign. Offline-checked status covers named local assertions only. The runtime observations record six passed ROS cases and one inconclusive separate-authority case. Other controls remain proposed.</p><section class="threat-record" id="record-TM-001"><h2>TM-001 · Untrusted participant injects application messages</h2><dl><dt>Stride</dt><dd>Spoofing / Tampering</dd><dt>Attacker prerequisite</dt><dd>Attacker can reach the selected DDS transport but does not hold a trusted lab identity.</dd><dt>Asset and boundary</dt><dd>Application data integrity; process-to-network boundary.</dd><dt>Scenario</dt><dd>A peer attempts to publish /chatter without an identity accepted by the intended trust domain.</dd><dt>Control</dt><dd>Require authenticated admission, reviewed governance and restrictive signed grants.</dd><dt>Verification action</dt><dd>Establish authorized delivery, then repeat with an independently created authority and record handshake/rejection evidence.</dd><dt>Owner role</dt><dd>Middleware / PKI maintainer</dd><dt>Evidence status</dt><dd>proposed</dd><dt>Evidence</dt><dd>Separate-authority delivery was not observed; explicit authentication rejection remains inconclusive. See runtime-observations.md.</dd><dt>Residual risk</dt><dd>A compromised trusted identity can still publish within its grants.</dd><dt>Treatment</dt><dd>reduce (proposed until demonstrated)</dd><dt>Deployment risk</dt><dd>Unassessed: assign likelihood rationale and mission-specific impact on the target deployment.</dd><dt>Review date</dt><dd>2026-10-20</dd></dl></section><section class="threat-record" id="record-TM-002"><h2>TM-002 · Listener identity gains application publishing authority</h2><dl><dt>Stride</dt><dd>Elevation of Privilege / Tampering</dd><dt>Attacker prerequisite</dt><dd>An authenticated process holds the listener identity; policy authoring or deployment could grant unnecessary writes.</dd><dt>Asset and boundary</dt><dd>Application publishing authority; policy-to-transport boundary.</dd><dt>Scenario</dt><dd>The listener is accidentally granted publication on /chatter or a wildcard that includes it.</dd><dt>Control</dt><dd>Generate an explicit listener read grant and default denial; inspect the deployed signed policy.</dd><dt>Verification action</dt><dd>Check exact generated publish/subscribe sets; attempt a forbidden application publication on the selected ROS host.</dd><dt>Owner role</dt><dd>Policy reviewer</dd><dt>Evidence status</dt><dd>runtime-observed</dd><dt>Evidence</dt><dd>reports/security-handbook/runtime-evidence/results.json and named logs. See runtime-observations.md for exact scope and remaining limits.</dd><dt>Residual risk</dt><dd>The local check proves intended generated scope; it does not prove the runtime loaded or enforced that scope.</dd><dt>Treatment</dt><dd>reduce (proposed until demonstrated)</dd><dt>Deployment risk</dt><dd>Unassessed: assign likelihood rationale and mission-specific impact on the target deployment.</dd><dt>Review date</dt><dd>2026-10-20</dd></dl></section><section class="threat-record" id="record-TM-003"><h2>TM-003 · Missing credentials lead to unsecured startup</h2><dl><dt>Stride</dt><dd>Spoofing / Information Disclosure</dd><dt>Attacker prerequisite</dt><dd>An operator or service starts a process with absent/unreadable enclave artifacts or an incorrect inherited configuration.</dd><dt>Asset and boundary</dt><dd>Confidentiality and trusted communication; launch-to-middleware boundary.</dd><dt>Scenario</dt><dd>A missing keystore or enclave triggers permissive fallback instead of an enforced startup failure.</dd><dt>Control</dt><dd>Set ROS_SECURITY_ENABLE=true and ROS_SECURITY_STRATEGY=Enforce in the actual service environment; track enclave overrides.</dd><dt>Verification action</dt><dd>Run the missing-enclave case and record exit status and initialization errors.</dd><dt>Owner role</dt><dd>Deployment maintainer</dd><dt>Evidence status</dt><dd>runtime-observed</dd><dt>Evidence</dt><dd>reports/security-handbook/runtime-evidence/results.json and named logs. See runtime-observations.md for exact scope and remaining limits.</dd><dt>Residual risk</dt><dd>An external service manager can still supply the wrong environment; inspect its effective settings.</dd><dt>Treatment</dt><dd>reduce (proposed until demonstrated)</dd><dt>Deployment risk</dt><dd>Unassessed: assign likelihood rationale and mission-specific impact on the target deployment.</dd><dt>Review date</dt><dd>2026-10-20</dd></dl></section><section class="threat-record" id="record-TM-004"><h2>TM-004 · Local code obtains a runtime private key</h2><dl><dt>Stride</dt><dd>Information Disclosure / Spoofing</dd><dt>Attacker prerequisite</dt><dd>Attacker gains readable filesystem/memory access through an overprivileged account, component or mount.</dd><dt>Asset and boundary</dt><dd>Participant identity; OS/process/credential boundary.</dd><dt>Scenario</dt><dd>Readable key.pem is copied and used to impersonate the participant elsewhere.</dd><dt>Control</dt><dd>Separate runtime accounts/trust scopes, restrict file access and mounts, keep authority keys off runtime hosts, define compromise recovery.</dd><dt>Verification action</dt><dd>Check read access as each actual account and exercise isolated credential replacement/recovery.</dd><dt>Owner role</dt><dd>Host / PKI maintainer</dd><dt>Evidence status</dt><dd>proposed</dd><dt>Evidence</dt><dd>Runtime key modes were 0600 in the namespace; no host-isolation or key-theft simulation was performed.</dd><dt>Residual risk</dt><dd>Code in the same trusted process can use its identity; encryption of traffic does not protect a stolen key.</dd><dt>Treatment</dt><dd>reduce (proposed until demonstrated)</dd><dt>Deployment risk</dt><dd>Unassessed: assign likelihood rationale and mission-specific impact on the target deployment.</dd><dt>Review date</dt><dd>2026-10-20</dd></dl></section><section class="threat-record" id="record-TM-005"><h2>TM-005 · Authorized input exhausts resources or violates application assumptions</h2><dl><dt>Stride</dt><dd>Denial of Service / Tampering</dd><dt>Attacker prerequisite</dt><dd>A participant has an allowed input path or an attacker reaches a resource-constrained interface.</dd><dt>Asset and boundary</dt><dd>Availability and semantic correctness; message-to-application boundary.</dd><dt>Scenario</dt><dd>A trusted sender delivers excessive, stale or semantically invalid inputs.</dd><dt>Control</dt><dd>Bound queues and processing, validate data and timing, define degraded operation and recovery.</dd><dt>Verification action</dt><dd>Use a bounded non-actuating load/input test with resource measurements and recovery observations.</dd><dt>Owner role</dt><dd>Application / operations maintainer</dd><dt>Evidence status</dt><dd>proposed</dd><dt>Evidence</dt><dd>No runtime load or application validation tests supplied.</dd><dt>Residual risk</dt><dd>The toy demo does not implement a robot safety policy or independent stop control.</dd><dt>Treatment</dt><dd>reduce (proposed until demonstrated)</dd><dt>Deployment risk</dt><dd>Unassessed: assign likelihood rationale and mission-specific impact on the target deployment.</dd><dt>Review date</dt><dd>2026-10-20</dd></dl></section><section class="threat-record" id="record-TM-006"><h2>TM-006 · Provisioning or update authority introduces trusted malicious artifacts</h2><dl><dt>Stride</dt><dd>Tampering / Elevation of Privilege</dd><dt>Attacker prerequisite</dt><dd>Attacker controls an approved build input, signing role, update source or policy approval path.</dd><dt>Asset and boundary</dt><dd>Software and policy integrity; supply-chain/provisioning boundary.</dd><dt>Scenario</dt><dd>A malicious binary or overly broad policy is installed with apparently valid provenance/signatures.</dd><dt>Control</dt><dd>Review inputs, separate update/identity/permission signing roles, record artifact/dependency inventory, constrain signing and provide recovery.</dd><dt>Verification action</dt><dd>Review the trust chain and exercise rejection of an unauthorized artifact plus a recovery path in an isolated environment.</dd><dt>Owner role</dt><dd>Build / release / PKI maintainer</dd><dt>Evidence status</dt><dd>proposed</dd><dt>Evidence</dt><dd>Vendored XML inputs are hash-checked locally; no production update pipeline was assessed.</dd><dt>Residual risk</dt><dd>A valid signature proves a relationship to a signing key, not that the signed content is harmless.</dd><dt>Treatment</dt><dd>reduce (proposed until demonstrated)</dd><dt>Deployment risk</dt><dd>Unassessed: assign likelihood rationale and mission-specific impact on the target deployment.</dd><dt>Review date</dt><dd>2026-10-20</dd></dl></section><section class="threat-record" id="record-TM-007"><h2>TM-007 · Inspection and logs expose data or broaden operational access</h2><dl><dt>Stride</dt><dd>Information Disclosure / Repudiation</dd><dt>Attacker prerequisite</dt><dd>An operator, compromised logger or external support tool can access logs or inspection credentials.</dd><dt>Asset and boundary</dt><dd>Sensitive messages, credentials and audit evidence; administration/data-retention boundary.</dd><dt>Scenario</dt><dd>A copied production identity or unrestricted evidence bundle discloses data or permits extra actions.</dd><dt>Control</dt><dd>Use a separate reviewed inspection identity, scoped log access, retention rules and sanitized shared evidence.</dd><dt>Verification action</dt><dd>Review actual inspection grants and evidence contents; test that an inspection principal cannot issue control operations.</dd><dt>Owner role</dt><dd>Operations / data owner</dd><dt>Evidence status</dt><dd>proposed</dd><dt>Evidence</dt><dd>No live inspection identity or retention mechanism was tested.</dd><dt>Residual risk</dt><dd>Logs may be incomplete or modified on a compromised host; retain provenance and assess reliability.</dd><dt>Treatment</dt><dd>reduce (proposed until demonstrated)</dd><dt>Deployment risk</dt><dd>Unassessed: assign likelihood rationale and mission-specific impact on the target deployment.</dd><dt>Review date</dt><dd>2026-10-20</dd></dl></section><section class="threat-record" id="record-TM-008"><h2>TM-008 · Clock, expiry or credential replacement disrupts communication</h2><dl><dt>Stride</dt><dd>Denial of Service / Spoofing</dd><dt>Attacker prerequisite</dt><dd>Clock state changes, credentials expire, or a renewal/revocation rollout is incomplete.</dd><dt>Asset and boundary</dt><dd>Availability and identity lifecycle; time/provisioning/runtime boundary.</dd><dt>Scenario</dt><dd>Peers reject otherwise intended communication or retain access longer than the recovery plan assumes.</dd><dt>Control</dt><dd>Review validity intervals, time assumptions, renewal overlap, replacement and peer/session restart behavior.</dd><dt>Verification action</dt><dd>Exercise expiry/renewal and removal of an identity on the chosen implementation, including existing sessions and recovery.</dd><dt>Owner role</dt><dd>PKI / operations maintainer</dd><dt>Evidence status</dt><dd>proposed</dd><dt>Evidence</dt><dd>Offline example validity is illustrative; no time or revocation runtime test was performed.</dd><dt>Residual risk</dt><dd>Do not assume instantaneous revocation or an online revocation service across vendors.</dd><dt>Treatment</dt><dd>reduce (proposed until demonstrated)</dd><dt>Deployment risk</dt><dd>Unassessed: assign likelihood rationale and mission-specific impact on the target deployment.</dd><dt>Review date</dt><dd>2026-10-20</dd></dl></section></section><section class="chapter" id="technology"><h1 id="technology-libraries-and-technology-choices">Libraries and technology choices</h1>
+<p><strong>Juan Carlos Nevarez · Gh0stlyKn1ght</strong> · Reviewed October 20, 2026.</p>
+<p>Use a small stack with clear boundaries: SROS 2 for DDS identity/policy material, a reviewed XML check for the example policy, Graphviz for editable vector diagrams, and WeasyPrint for predictable paper output. The choices below distinguish tools used in this edition from deployment options that need a target-system trial.</p>
+<h2 id="technology-adopted-in-this-edition">Adopted in this edition</h2>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>Purpose and reason</th>
+<th>Limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SROS 2 policy 0.2.0</td>
+<td>ROS-oriented privileges and a path to signed DDS permission artifacts. The offline example uses a pinned upstream schema and transform.</td>
+<td>A valid policy and signed file still need actual middleware enforcement tests.</td>
+</tr>
+<tr>
+<td>Python + lxml</td>
+<td>Schema validation, the upstream XSLT, exact grant assertions and input-boundary checks. Schema resolution is local; DTDs and XInclude are rejected for this example.</td>
+<td>The checker accepts this defined format, not arbitrary external XML/XSLT.</td>
+</tr>
+<tr>
+<td>Graphviz DOT → SVG/PDF</td>
+<td>Editable architecture source and sharp monochrome diagrams on paper. The build records the installed tool version.</td>
+<td>Diagram boundaries are design claims until their controls are verified.</td>
+</tr>
+<tr>
+<td>Markdown + WeasyPrint</td>
+<td>Source-controlled chapters, paged CSS, bookmarks, embedded fonts and US Letter output. Keep the tested 69.0 renderer pinned for this edition.</td>
+<td>Library version alone does not establish PDF accessibility or printing correctness.</td>
+</tr>
+<tr>
+<td>JSON threat register and result template</td>
+<td>Stable IDs, prerequisites, owners, evidence states and residual-risk notes, rendered into printable records.</td>
+<td>No automatic risk score substitutes for a deployment-specific judgment.</td>
+</tr>
+<tr>
+<td>Poppler tools</td>
+<td>Inspect every PDF page size, embedded fonts, extracted text and record coverage.</td>
+<td>A rendered PDF check is not physical printer evidence.</td>
+</tr>
+</tbody>
+</table>
+<p>Primary documentation: <a href="https://github.com/ros2/sros2">SROS 2</a>, <a href="https://lxml.de/resolvers.html">lxml resolution and XSLT access control</a>, <a href="https://graphviz.org/docs/outputs/svg/">Graphviz SVG</a>, and <a href="https://doc.courtbouillon.org/weasyprint/stable/common_use_cases.html#pdf">WeasyPrint PDF guidance</a>. The WeasyPrint documentation describes newer releases too; this package records what it actually used. A future PDF/UA export needs semantic review and an independent conformance check before claiming accessibility compliance.</p>
+<h2 id="technology-middleware-and-platform-decisions">Middleware and platform decisions</h2>
+<p><strong>For the included exercise:</strong> use Jazzy on Ubuntu 24.04 with <code>rmw_fastrtps_cpp</code>. This keeps the commands and policy aligned with a reviewed official tutorial and the pinned Jazzy transformation. Capture installed package versions; do not infer package versions from the ROS distribution name. The isolated run recorded six passed ROS cases and one inconclusive separate-authority case; consult the runtime observations before relying on a particular claim.</p>
+<p><strong>For a new long-lived robot:</strong> evaluate Lyrical on Ubuntu 26.04 when its hardware/application dependencies are supported. Lyrical's official support horizon is May 2031; Jazzy remains listed through May 2029. The decision depends on drivers, vendor support, package availability, and a measured migration run. See the <a href="https://github.com/ros2/ros2_documentation/blob/rolling/source/Releases.rst">official release table</a> and <a href="https://github.com/ros2/ros2_documentation/blob/rolling/source/Releases/lyrical/supported-platforms.rst">Lyrical platform matrix</a>.</p>
+<p><strong>Fast DDS</strong> is a suitable starting point for this DDS-focused lab. <strong>Cyclone DDS</strong> is a credible alternate implementation for a separately tested deployment; both document security plugins and signed governance/permissions. Neither is declared “more secure” here, and no performance benchmark was run. Choose based on supported packaging, required features, operational evidence and vendor support. The Jazzy tutorial does not support secure cross-vendor communication. Sources: <a href="https://fast-dds.docs.eprosima.com/en/latest/fastdds/security/security.html">Fast DDS security</a>, <a href="https://cyclonedds.io/docs/cyclonedds/latest/security.html">Cyclone DDS security</a>, and <a href="https://github.com/ros2/ros2_documentation/blob/jazzy/source/Tutorials/Advanced/Security/Introducing-ros2-security.rst">Jazzy tutorial</a>.</p>
+<p><strong>Zenoh</strong> is an option when its routing/topology model fits the application. The current <code>zenoh_security_tools</code> can generate session configs using SROS 2 policy and keystore material. Its router/session settings and bridge boundaries need their own review; switching <code>RMW_IMPLEMENTATION</code> is not a complete migration of DDS security. Source: <a href="https://github.com/ros2/rmw_zenoh/tree/rolling/zenoh_security_tools">official Zenoh security tools</a>. This option is documented, not installed or validated in this package.</p>
+<h2 id="technology-useful-next-stage-tools">Useful next-stage tools</h2>
+<ul>
+<li><strong>OWASP Threat Dragon desktop:</strong> useful when several people want a visual data-flow editor with threat/remediation records and local files. Keep the JSON register as a reviewable artifact and check export compatibility with old diagrams. It is optional; the authored DOT/SVG figure already works offline. <a href="https://www.threatdragon.com/docs/">Threat Dragon documentation</a>.</li>
+<li><strong>Syft + Grype:</strong> useful for dependency inventory and vulnerability triage of a selected deployment image/filesystem. Record tool versions, artifact digest, database age and exceptions. An SBOM is not evidence that a vulnerability is exploitable; a clean scan does not prove safety. These tools were researched, not run. <a href="https://github.com/anchore/syft">Syft</a>, <a href="https://github.com/anchore/grype">Grype</a>.</li>
+<li><strong>Cosign:</strong> useful when an actual release pipeline needs artifact-signature verification. Define the accepted signing identity/issuer or trusted key and verify the intended artifact digest. Keep this release-signing trust separate from DDS identities. No signing integration was configured. <a href="https://docs.sigstore.dev/cosign/verifying/verify/">Cosign verification</a>.</li>
+</ul>
+<p>The most useful next investment is stronger instrumentation for the inconclusive separate-authority case, followed by a small current-robot case study. Introducing more tooling before those results would not strengthen the handbook's evidence.</p></section><section class="chapter" id="lab"><h1 id="lab-bounded-sros-2-teaching-lab">Bounded SROS 2 teaching lab</h1>
+<p><strong>Juan Carlos Nevarez · Gh0stlyKn1ght</strong> · October 20, 2026.</p>
+<p><strong>Goal:</strong> distinguish trusted identity, permitted data flow, and enforced startup using a talker/listener system with no actuators. The source-reviewed recipe targets Ubuntu 24.04 + ROS 2 Jazzy + <code>rmw_fastrtps_cpp</code>. It was exercised in isolated Ubuntu userspace on this workstation; see the <a href="https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/reports/security-handbook/runtime-observations.md">runtime observations</a> for six passed ROS cases and one inconclusive case. Lyrical, Cyclone DDS, and Zenoh require separately recorded compatibility runs.</p>
+<h2 id="lab-prerequisites-and-boundaries">Prerequisites and boundaries</h2>
+<p>Use an isolated lab host with the Jazzy environment sourced and the distribution's <code>sros2</code>, <code>demo_nodes_cpp</code>, <code>rmw_fastrtps_cpp</code>, and Python <code>lxml</code> packages installed. Follow the official ROS installation instructions for your platform. Confirm that the chosen DDS package includes security support. Do not attach a moving robot. The exercise uses domain 42 and localhost discovery; neither setting is an authorization control.</p>
+<p>The setup script creates signing keys and node private keys in a <strong>new</strong> directory with restrictive creation permissions. It refuses to overwrite an existing path. Keep the entire provisioning directory private, outside version control. The repository contains policy and unsigned example permissions only; it never contains a real keystore.</p>
+<p>The policy grants <code>/chatter</code> publishing only to the talker, and subscription only to the listener. Both identities have explicit logging/parameter/time allowances and replies for their own parameter/type-description services. The transform adds the DDS ROS discovery topic. These allowances are part of the example's attack surface; the listener is not a principal that can perform no publishing at all.</p>
+<h2 id="lab-1-run-the-offline-check">1. Run the offline check</h2>
+<p>From the repository root:</p>
+<pre><code class="language-sh">python3 examples/security-lab/check_policy.py
+python3 -m unittest discover -s examples/security-lab -p 'test_*.py' -v
+</code></pre>
+<p>The checker validates the policy and generated DDS XML against pinned schemas. It verifies exact topic direction sets, certificate subjects, domain 42, default denial, and no wildcard grants. It rejects DTD/entity declarations and XInclude, disables network resolution, and denies XSLT I/O. The vendored files have a source manifest and hashes. This protects the local check's defined input boundary; it is not a generic sandbox for arbitrary XML/XSLT.</p>
+<p><code>generated/permissions.xml</code> is <strong>unsigned</strong> and has an illustrative October 2026–October 2027 interval. It is evidence of transformation, not deployable credentials. Runtime SROS 2 derives permission validity from the actual certificate. Review that validity and use a deployment-specific renewal policy.</p>
+<h2 id="lab-2-provision-on-the-ros-host">2. Provision on the ROS host</h2>
+<p>Choose a new absolute directory and run:</p>
+<pre><code class="language-sh">bash examples/security-lab/setup.sh "$HOME/ros2-security-lab"
+</code></pre>
+<p>The script runs the offline check before creating a keystore, creates separate talker/listener enclaves, and applies <code>policy.xml</code> using <code>create_permission</code>. It records package versions in the private lab directory. Check the capture result: package names differ, so resolve missing entries before treating the version inventory as complete. Review the generated <code>governance.xml</code>, <code>permissions.xml</code>, signed files, certificate subjects, domains and validity before proceeding. Capture their hashes, not their private-key contents. A new example keystore is not a production signing service.</p>
+<h2 id="lab-3-establish-the-authorized-control-case">3. Establish the authorized control case</h2>
+<p>In <strong>each</strong> terminal, source ROS Jazzy, then:</p>
+<pre><code class="language-sh">source examples/security-lab/environment.sh
+export ROS_SECURITY_KEYSTORE="$HOME/ros2-security-lab/keystore"
+</code></pre>
+<p>Run the talker in terminal A:</p>
+<pre><code class="language-sh">ros2 run demo_nodes_cpp talker --ros-args --enclave /security_lab/talker
+</code></pre>
+<p>Run the listener in terminal B:</p>
+<pre><code class="language-sh">ros2 run demo_nodes_cpp listener --ros-args --enclave /security_lab/listener
+</code></pre>
+<p>Observe several messages, record the time window and logs, and stop both with Ctrl-C. If this control case fails, resolve credentials, governance, clock, version, network, type and QoS problems before interpreting a negative case.</p>
+<h2 id="lab-4-test-denied-behavior">4. Test denied behavior</h2>
+<p>Keep the same environment and vary one property at a time.</p>
+<p><strong>Missing enclave:</strong> use an enclave that was never created:</p>
+<pre><code class="language-sh">ros2 run demo_nodes_cpp talker --ros-args --enclave /security_lab/missing
+</code></pre>
+<p>Expected: the secured participant fails to initialize. Record the actual error and exit status. A fallback to unsecured startup fails this case.</p>
+<p><strong>Forbidden remap:</strong> retain the talker identity but change the application topic:</p>
+<pre><code class="language-sh">ros2 run demo_nodes_cpp talker --ros-args --enclave /security_lab/talker \
+  --remap chatter:=not_chatter
+</code></pre>
+<p>Expected: the unauthorized endpoint is rejected and no forbidden messages are delivered. The process-level outcome can depend on implementation and node error handling. Record what occurs rather than copying an expected log message.</p>
+<p><strong>Wrong direction:</strong> run the talker executable under the listener enclave:</p>
+<pre><code class="language-sh">ros2 run demo_nodes_cpp talker --ros-args --enclave /security_lab/listener
+</code></pre>
+<p>Expected: this identity is denied publication on <code>/chatter</code>. The executable's default node name also changes its parameter-service names relative to the listener policy, so this is a whole-profile rejection case. The exact generated grant check separately isolates the application-direction assertion.</p>
+<p><strong>Untrusted authority:</strong> create a separate fresh lab directory with the setup script. Start the original talker using the first keystore; start the listener using the second keystore, with the same listener enclave path. The independently generated authorities should prevent trusted communication. Record the handshake or access evidence and compare it with the authorized control. Successful startup alone does not establish peer acceptance.</p>
+<h2 id="lab-5-record-results-honestly">5. Record results honestly</h2>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Required observation</th>
+<th>Initial status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Offline policy/grant check</td>
+<td>Named local assertions pass.</td>
+<td>Run by the package author; see generated check record.</td>
+</tr>
+<tr>
+<td>Authorized pair</td>
+<td>Listener receives known talker messages.</td>
+<td>Seven messages observed; pass.</td>
+</tr>
+<tr>
+<td>Missing enclave</td>
+<td>Enforced initialization failure.</td>
+<td>Observed; exit 250, pass.</td>
+</tr>
+<tr>
+<td>Forbidden remap</td>
+<td>Forbidden endpoint/delivery denied.</td>
+<td>Writer creation rejected; pass.</td>
+</tr>
+<tr>
+<td>Wrong identity profile</td>
+<td>Unauthorized application publication denied.</td>
+<td>Profile rejected; focused write probe also rejected; pass.</td>
+</tr>
+<tr>
+<td>Separate authority</td>
+<td>Untrusted peer cannot exchange the protected application data.</td>
+<td>Zero messages, no explicit rejection evidence; inconclusive.</td>
+</tr>
+</tbody>
+</table>
+<p>These are recorded author-run observations, not guaranteed outcomes on your host. Repeat the checks and retain your own results. The runtime runner can automate these bounded cases.</p>
+<p>Copy <code>results-template.json</code> into the private lab directory, record each actual outcome, and link sanitized logs plus the version manifest. “No messages” without a working authorized control and rejection evidence is inconclusive. Do not change a result to pass because XML was generated successfully.</p>
+<p><strong>Explain back:</strong> What is authenticated? Which principal receives permissions? Why does default denial not stop an authorized process abusing an allowed topic? Which host file access would expose the identity?</p>
+<p><strong>Artifact:</strong> diagram, threat record, reviewed policy/governance, artifact hashes, version manifest, observed cases and limitations. Next, connect one deployment-specific robot control to the threat register and a separately bounded hardware test plan.</p>
+<h2 id="lab-sources-and-notices">Sources and notices</h2>
+<p><a href="https://github.com/ros2/sros2">SROS 2</a>, the <a href="https://github.com/ros2/ros2_documentation/blob/jazzy/source/Tutorials/Advanced/Security/Introducing-ros2-security.rst">official Jazzy security setup</a>, and <a href="https://github.com/ros2/ros2_documentation/blob/jazzy/source/Tutorials/Advanced/Security/Access-Controls.rst">access controls</a> inform the procedure. Vendored SROS 2 schemas/transform retain Apache 2.0 notices in <code>vendor/sros2/LICENSE</code>; W3C schema attribution and its source link are recorded in the vendor manifest and notice. The new scripts and examples use the repository's Apache 2.0 license. Handbook prose retains the design-document attribution context described in the updated PDF.</p>
+<h2 id="lab-optional-runtime-automation">Optional runtime automation</h2>
+<p><code>run_runtime.py</code> executes the bounded software cases against two independently provisioned keystores. See the recorded runtime observations for its exact command, result interpretation and the remaining inconclusive case. It returns nonzero for failed or inconclusive cases. <code>probe_publish.py</code> isolates application writer creation after the listener node has initialized successfully. <code>authentication_probe.cpp</code> is a separate Fast DDS 2.14 callback diagnostic; its trusted acceptance and silent untrusted case are recorded separately from the ROS cases.</p></section><section class="chapter" id="runtime-results"><h1 id="runtime-results-runtime-and-publication-validation">Runtime and publication validation</h1>
+<p><strong>Juan Carlos Nevarez · Gh0stlyKn1ght</strong> · October 20, 2026.</p>
+<h2 id="runtime-results-what-was-actually-run">What was actually run</h2>
+<p>The non-actuating lab was executed using Ubuntu 24.04 Noble userspace and official ROS Jazzy packages in a private directory on the Kali workstation. Bubblewrap supplied separate user, PID and network namespaces. Only loopback was enabled for the communication tests, and the repository was mounted read-only. No ROS packages were installed into the host OS and no robot was attached.</p>
+<p>The Ubuntu root image matched its official SHA-256 manifest; its GPG signature was not independently checked. The private image's <code>staff</code> group was mapped to namespace GID 0 to allow a fontconfig package post-installation step under the single-GID mapping. This was an execution environment, not a test of host isolation, a stock Ubuntu boot, or a hardened container product.</p>
+<p>The installed baseline included <strong>Fast DDS 2.14.7</strong>, <strong>rmw_fastrtps_cpp 8.4.4</strong>, and <strong>SROS 2 0.13.6</strong>. Exact Debian package versions, the host kernel, selected settings, public runtime-artifact hashes, and sanitized logs are retained in <code>runtime-evidence/</code>. Authority keys and participant private keys remain outside the repository.</p>
+<h2 id="runtime-results-observed-ros-cases">Observed ROS cases</h2>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Observation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorized pair</td>
+<td>Seven messages published and received during the observation window; both participants stayed running.</td>
+<td>Pass.</td>
+</tr>
+<tr>
+<td>Missing enclave</td>
+<td>Initialization failed without an artificial test shutdown; exit 250.</td>
+<td>Pass.</td>
+</tr>
+<tr>
+<td>Forbidden topic remap</td>
+<td>Publisher creation failed; no application messages published; exit 250.</td>
+<td>Pass.</td>
+</tr>
+<tr>
+<td>Wrong identity profile</td>
+<td>The talker executable under the listener identity failed to initialize its allowed profile; exit 250.</td>
+<td>Pass, for whole-profile rejection.</td>
+</tr>
+<tr>
+<td>Focused listener publishing probe</td>
+<td>The listener node was constructed successfully, then <code>/chatter</code> writer creation was explicitly denied by Fast DDS; probe exit 2.</td>
+<td>Pass, for application write denial.</td>
+</tr>
+<tr>
+<td>Independently generated authority</td>
+<td>Talker published seven messages; listener received zero. Both stayed running, but no explicit authentication rejection appeared in default logs.</td>
+<td><strong>Inconclusive</strong> for the claimed rejection mechanism.</td>
+</tr>
+<tr>
+<td>Authorized control repeated afterward</td>
+<td>Seven messages published and received after the negative cases.</td>
+<td>Pass.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Six of seven ROS cases passed. The complete suite is not reported as passing.</strong> The separate-authority observation meets the no-delivery expectation but does not by itself establish why delivery stopped.</p>
+<p>A supplementary native Fast DDS probe recorded <code>AUTHENTICATION_ACCEPTED</code> for the trusted peer. The same probe with the independently created authority recorded neither acceptance nor rejection in its eight-second window. That result is retained, not converted into a rejection claim. Further discovery/handshake instrumentation is needed before closing this evidence gap.</p>
+<p>The actual permissions XML generated by the installed SROS 2 package also passed the exact two-grant checks used by the offline example; see <code>runtime-permission-check.json</code>.</p>
+<p>The two runtime enclave keys had mode <code>0600</code> in this environment. That checks group/other mode bits; it does not establish that privileged code, same-process code, mounts, or a different deployment account cannot access them.</p>
+<h2 id="runtime-results-reproduce-the-software-tests">Reproduce the software tests</h2>
+<p>On a prepared Jazzy host, provision two new lab directories using the documented setup script. Then run the runner with their separate keystores and a new output directory:</p>
+<pre><code class="language-sh">python3 examples/security-lab/run_runtime.py \
+  --keystore /absolute/first/keystore \
+  --untrusted-keystore /absolute/second/keystore \
+  --output /absolute/new-results-directory
+</code></pre>
+<p>Run only on a non-actuating lab system. The runner uses domain 42 and localhost discovery, scopes shutdown to the processes it starts, refuses to reuse an output directory, and returns a nonzero status if any case fails or is inconclusive. Review the logs and version manifest before comparing results across machines.</p>
+<p>The optional <code>authentication_probe.cpp</code> targets the Fast DDS 2.14 API and requires that version's headers/libraries and a C++ compiler. Its native callback observations are separate from the ROS application delivery cases; it does not replace them.</p>
+<h2 id="runtime-results-website-checks">Website checks</h2>
+<p>The site was built with Jekyll 4.4.1 and a committed dependency lockfile. Its fork URL and <code>/design</code> base path replace the inherited upstream domain configuration. The public site uses static navigation: inherited OAuth/token-storage scripts, third-party analytics, and the old login route are excluded from the served output. This is a focused repair of the published surface, not a full dependency or vulnerability audit.</p>
+<p>All four revised security pages and the landing page loaded in Chromium. A static sweep checked 131 local links/assets across those pages. PDF downloads, the vector figure, and an exact historical source download returned successfully. No JavaScript errors, failed assets, or mobile horizontal overflow were observed.</p>
+<p>The historical sources retain front matter and Liquid snippets. The site build excludes them from Jekyll processing and copies them as exact downloads afterward; this prevents archived permalinks or includes from replacing the revised pages.</p>
+<p>Publication is separately tracked. A local build/browser check does not prove a GitHub Pages deployment. The Pages workflow is manual, and deployment verification must compare its source commit and handbook hash with <code>site-build.json</code> after publication.</p>
+<h2 id="runtime-results-printer-proof-and-remaining-limits">Printer proof and remaining limits</h2>
+<p>Two one-page proofs were submitted to the connected HP LaserJet: a portrait lab-command page and the landscape diagram. CUPS reported both jobs completed. Physical orientation, clipping and readability still need the user's observation; spool completion is not paper verification.</p>
+<p>Still unverified: any physical robot, actuator safety, revocation/expiry and recovery behavior, hardware-backed keys, privileged-host isolation, bounded overload behavior, and packet-level confidentiality. The separate-authority case remains inconclusive as described above. No new vulnerability assessment or compliance conclusion is claimed.</p></section><section class="chapter" id="policy-source"><h1>Complete example policy</h1><p>Source: examples/security-lab/policy.xml. Offline-checked scope for the selected example; not signed runtime credentials.</p><pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!-- Juan Carlos Nevarez / Gh0stlyKn1ght, 2026. Non-actuating teaching policy. --&gt;
+&lt;policy version=&quot;0.2.0&quot;&gt;
+  &lt;enclaves&gt;
+    &lt;enclave path=&quot;/security_lab/talker&quot;&gt;
+      &lt;profiles&gt;
+        &lt;profile ns=&quot;/&quot; node=&quot;talker&quot;&gt;
+          &lt;topics publish=&quot;ALLOW&quot;&gt;
+            &lt;topic&gt;/chatter&lt;/topic&gt;
+            &lt;topic&gt;/rosout&lt;/topic&gt;
+            &lt;topic&gt;/parameter_events&lt;/topic&gt;
+          &lt;/topics&gt;
+          &lt;topics subscribe=&quot;ALLOW&quot;&gt;
+            &lt;topic&gt;/parameter_events&lt;/topic&gt;
+            &lt;topic&gt;/clock&lt;/topic&gt;
+          &lt;/topics&gt;
+          &lt;services reply=&quot;ALLOW&quot;&gt;
+            &lt;service&gt;~/describe_parameters&lt;/service&gt;
+            &lt;service&gt;~/get_parameter_types&lt;/service&gt;
+            &lt;service&gt;~/get_parameters&lt;/service&gt;
+            &lt;service&gt;~/list_parameters&lt;/service&gt;
+            &lt;service&gt;~/set_parameters&lt;/service&gt;
+            &lt;service&gt;~/set_parameters_atomically&lt;/service&gt;
+            &lt;service&gt;~/get_type_description&lt;/service&gt;
+          &lt;/services&gt;
+        &lt;/profile&gt;
+      &lt;/profiles&gt;
+    &lt;/enclave&gt;
+    &lt;enclave path=&quot;/security_lab/listener&quot;&gt;
+      &lt;profiles&gt;
+        &lt;profile ns=&quot;/&quot; node=&quot;listener&quot;&gt;
+          &lt;topics publish=&quot;ALLOW&quot;&gt;
+            &lt;topic&gt;/rosout&lt;/topic&gt;
+            &lt;topic&gt;/parameter_events&lt;/topic&gt;
+          &lt;/topics&gt;
+          &lt;topics subscribe=&quot;ALLOW&quot;&gt;
+            &lt;topic&gt;/chatter&lt;/topic&gt;
+            &lt;topic&gt;/parameter_events&lt;/topic&gt;
+            &lt;topic&gt;/clock&lt;/topic&gt;
+          &lt;/topics&gt;
+          &lt;services reply=&quot;ALLOW&quot;&gt;
+            &lt;service&gt;~/describe_parameters&lt;/service&gt;
+            &lt;service&gt;~/get_parameter_types&lt;/service&gt;
+            &lt;service&gt;~/get_parameters&lt;/service&gt;
+            &lt;service&gt;~/list_parameters&lt;/service&gt;
+            &lt;service&gt;~/set_parameters&lt;/service&gt;
+            &lt;service&gt;~/set_parameters_atomically&lt;/service&gt;
+            &lt;service&gt;~/get_type_description&lt;/service&gt;
+          &lt;/services&gt;
+        &lt;/profile&gt;
+      &lt;/profiles&gt;
+    &lt;/enclave&gt;
+  &lt;/enclaves&gt;
+&lt;/policy&gt;
+</pre></section><section class="chapter" id="change-record"><h1 id="change-record-october-2026-security-revision">October 2026 security revision</h1>
+<p><strong>Juan Carlos Nevarez · Gh0stlyKn1ght</strong> · github.com/Gh0stlyKn1ght</p>
+<p>This edition <strong>changes the four security article sources</strong>. It is a technical revision beyond the earlier extraction/report. Original author credits and exact historical sources remain available. The updated handbook is the current reading path; the earlier 139-page reader remains a historical reference.</p>
+<table>
+<thead>
+<tr>
+<th>Review finding</th>
+<th>Change made</th>
+<th>Remaining validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F01 · Keystore path</td>
+<td>Corrected to the root containing <code>enclaves/</code>; startup and missing-path cases observed.</td>
+<td>Repeat on the target deployment.</td>
+</tr>
+<tr>
+<td>F02 · STRIDE error</td>
+<td>Corrected Information Disclosure and added an evidence-aware method.</td>
+<td>Model review against an actual mission.</td>
+</tr>
+<tr>
+<td>F03 · Interoperability promise</td>
+<td>Replaced with distribution/vendor scope and tested-combination requirements.</td>
+<td>A separately recorded trial for each required combination.</td>
+</tr>
+<tr>
+<td>F04 · Ambiguous SROS enabled field</td>
+<td>Current records name prerequisites, controls, evidence and residual risk.</td>
+<td>Runtime observations; historical table legend stays archived.</td>
+</tr>
+<tr>
+<td>F05 · Mixed identity/hardware/signing roles</td>
+<td>Separated DDS credentials, host/process boundaries, hardware protection and update signing.</td>
+<td>Platform-specific key loading, recovery and revocation tests.</td>
+</tr>
+<tr>
+<td>F06 · Crystal baseline</td>
+<td>Current non-actuating Jazzy/DDS exercise; separate Lyrical platform decision. Historical robot models archived.</td>
+<td>Target hardware and package compatibility.</td>
+</tr>
+<tr>
+<td>F07 · DDS standard</td>
+<td>Added 1.2 reference while retaining the distinction from actual implementation support.</td>
+<td>Vendor-specific feature/standard matrix.</td>
+</tr>
+<tr>
+<td>F08 · Transport scope</td>
+<td>DDS-specific recipe labeled; Zenoh configuration and bridges discussed separately.</td>
+<td>Zenoh/bridge deployment tests if selected.</td>
+</tr>
+<tr>
+<td>F09 · Scores/evidence</td>
+<td>Added 8 structured threat records with owners, prerequisites and residual risk. Old DREAD/RVSS scores remain historical.</td>
+<td>Deployment-specific likelihood/impact and accountable owners.</td>
+</tr>
+<tr>
+<td>F10 · Proposed claims</td>
+<td>Added explicit evidence states, runtime logs and result templates. Six ROS cases passed.</td>
+<td>Separate-authority rejection evidence remains inconclusive.</td>
+</tr>
+<tr>
+<td>Print layout</td>
+<td>New editable vector figure and portrait updated handbook.</td>
+<td>Physical printer proof remains absent.</td>
+</tr>
+</tbody>
+</table>
+<p>Additional material includes a full lab recipe, restrictive policy, offline schema/XSLT generation and semantic grant checks, eight boundary tests, non-overwriting provisioning script, version capture, and technology recommendations. All five supporting articles now clarify the relevant security boundary: enclave commands, participant mapping, action names, the historical DDS overview, and the network-flow API discussion.</p>
+<p>The follow-up repaired the served OAuth surface, pinned the Jekyll build, corrected the fork URL/base path, and checked the site in Chromium. A manual Pages workflow is prepared; publication is separately tracked. This does not imply a current CVE audit, robot deployment or hardware assessment.</p></section><section class="chapter" id="notices"><h1>Credits and license notices</h1><p>2026 revision and new material: Juan Carlos Nevarez · Gh0stlyKn1ght. Original design-document attribution: Open Source Robotics Foundation, Inc. Original article authors remain identified in the revised chapters.</p><p>The original site specifies Creative Commons Attribution 3.0 for design documents except where otherwise noted. This edition preserves that attribution context and identifies changes. <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p><p>Original source snapshots are stored in articles/security_history. The historical reader remains in reports/security-review. The project also supplies an Apache 2.0 code license; its full text follows. New example scripts and policy are under the repository code license.</p><h1 id="vendored-xml-tooling">Vendored XML tooling</h1>
+<p>The unchanged SROS 2 schemas and permission transform come from ros2/sros2 commit <code>80a08ffa1bccd2de602c2acd120b209ad5f8ce83</code> (Jazzy branch, retrieved October 20, 2026). Copyright and license context: SROS 2 / Open Source Robotics Foundation and its contributors, Apache License 2.0; the upstream license is reproduced in <code>sros2/LICENSE</code>. Exact paths, URLs and SHA-256 hashes are recorded in <code>sources.json</code>. These files support the bounded offline example; their inclusion does not certify interoperability or current middleware behavior.</p>
+<p><code>xml.xsd</code> is the W3C XML namespace schema from https://www.w3.org/2001/03/xml.xsd. The schema is unchanged; its source URL and hash are retained. License: https://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 .</p><h2>Repository code license</h2><pre class="license">
+                                 Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      &quot;License&quot; shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      &quot;Licensor&quot; shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      &quot;Legal Entity&quot; shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      &quot;control&quot; means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      &quot;You&quot; (or &quot;Your&quot;) shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      &quot;Source&quot; form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      &quot;Object&quot; form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      &quot;Work&quot; shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      &quot;Derivative Works&quot; shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      &quot;Contribution&quot; shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, &quot;submitted&quot;
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as &quot;Not a Contribution.&quot;
+
+      &quot;Contributor&quot; shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a &quot;NOTICE&quot; text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an &quot;AS IS&quot; BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets &quot;[]&quot;
+      replaced with your own identifying information. (Don&#x27;t include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same &quot;printed page&quot; as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright 2014 Open Source Robotics Foundation, Inc.
+
+   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+</pre></section></body></html>

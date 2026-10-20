@@ -1,0 +1,55 @@
+{
+  "review_date": "2026-10-20",
+  "repository_snapshots": {
+    "ros2_documentation": {
+      "branch": "rolling",
+      "commit": "0d0c2c2d8c51a3f240bafe0c010e71c1d3d72125"
+    },
+    "sros2": {
+      "branch": "jazzy",
+      "commit": "80a08ffa1bccd2de602c2acd120b209ad5f8ce83"
+    },
+    "rmw_zenoh": {
+      "branch": "rolling",
+      "commit": "dda52d6d9bc863b4b6c86a0b4fd1c6788f4a651e"
+    }
+  },
+  "official_doc_sources": [
+    {
+      "title": "Releases",
+      "url": "https://raw.githubusercontent.com/ros2/ros2_documentation/0d0c2c2d8c51a3f240bafe0c010e71c1d3d72125/source/Releases.rst",
+      "sha256": "37166dc87cd108e1578a7477d8be8cee4c9c4e72562686bbf1ef7e4af027d2ab"
+    },
+    {
+      "title": "Lyrical platforms",
+      "url": "https://raw.githubusercontent.com/ros2/ros2_documentation/0d0c2c2d8c51a3f240bafe0c010e71c1d3d72125/source/Releases/lyrical/supported-platforms.rst",
+      "sha256": "eb4cf58d44fbb5d9d560f5d394d3252e5c0d760c0cff8aa9974741338de573fc"
+    },
+    {
+      "title": "Introducing-ros2-security",
+      "url": "https://raw.githubusercontent.com/ros2/ros2_documentation/03f26be23292f1b8523b3e4f807f3f123ed5b12a/source/Tutorials/Advanced/Security/Introducing-ros2-security.rst",
+      "sha256": "36e53058318fa1db23791c93f0815139615006a7ef8dabdd5c0deae442ce3581"
+    },
+    {
+      "title": "Access-Controls",
+      "url": "https://raw.githubusercontent.com/ros2/ros2_documentation/03f26be23292f1b8523b3e4f807f3f123ed5b12a/source/Tutorials/Advanced/Security/Access-Controls.rst",
+      "sha256": "548808d7cb8638bce547dda538371decf07c69729011b4acd136c0e01992bd2e"
+    }
+  ],
+  "other_primary_references": [
+    "https://www.omg.org/spec/DDS-SECURITY/1.2",
+    "https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats",
+    "https://www.first.org/cvss/v4.0/specification-document",
+    "https://fast-dds.docs.eprosima.com/en/latest/fastdds/security/security.html",
+    "https://cyclonedds.io/docs/cyclonedds/latest/security.html",
+    "https://www.threatdragon.com/docs/",
+    "https://graphviz.org/docs/outputs/svg/",
+    "https://lxml.de/resolvers.html",
+    "https://doc.courtbouillon.org/weasyprint/stable/common_use_cases.html#pdf",
+    "https://github.com/anchore/syft",
+    "https://github.com/anchore/grype",
+    "https://docs.sigstore.dev/cosign/verifying/verify/"
+  ],
+  "vendor_snapshot": "examples/security-lab/vendor/sources.json",
+  "runtime_claims": "Six ROS cases passed; the separate-authority case remains inconclusive. See runtime-observations.md and runtime-evidence/results.json."
+}

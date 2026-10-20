@@ -1,0 +1,23 @@
+{
+  "printer": "HP LaserJet 400 M401n",
+  "paper": "US Letter",
+  "scaling": "none / 100%",
+  "jobs": [
+    {
+      "id": 8,
+      "document": "security-handbook.pdf",
+      "page": 31,
+      "orientation": "portrait",
+      "cups_status": "completed"
+    },
+    {
+      "id": 9,
+      "document": "trust-boundaries-landscape.pdf",
+      "page": 1,
+      "orientation": "landscape",
+      "cups_status": "completed"
+    }
+  ],
+  "user_visual_confirmation": null,
+  "physical_print_verified": false
+}

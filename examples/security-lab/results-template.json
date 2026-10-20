@@ -1,0 +1,54 @@
+{
+  "status": "not-run",
+  "baseline": "Ubuntu 24.04 / ROS 2 Jazzy / rmw_fastrtps_cpp",
+  "versions_manifest": null,
+  "governance_and_permissions_hashes": null,
+  "cases": [
+    {
+      "id": "authorized",
+      "expected": "Known talker messages delivered to listener",
+      "outcome": "not-run",
+      "observed": null,
+      "exit_status": null,
+      "evidence_paths": [],
+      "observation_window_seconds": null
+    },
+    {
+      "id": "missing-enclave",
+      "expected": "Enforced participant initialization fails",
+      "outcome": "not-run",
+      "observed": null,
+      "exit_status": null,
+      "evidence_paths": [],
+      "observation_window_seconds": null
+    },
+    {
+      "id": "forbidden-remap",
+      "expected": "Unauthorized endpoint or delivery denied",
+      "outcome": "not-run",
+      "observed": null,
+      "exit_status": null,
+      "evidence_paths": [],
+      "observation_window_seconds": null
+    },
+    {
+      "id": "wrong-profile",
+      "expected": "Listener identity denied application publication",
+      "outcome": "not-run",
+      "observed": null,
+      "exit_status": null,
+      "evidence_paths": [],
+      "observation_window_seconds": null
+    },
+    {
+      "id": "untrusted-authority",
+      "expected": "Untrusted peer denied protected application communication",
+      "outcome": "not-run",
+      "observed": null,
+      "exit_status": null,
+      "evidence_paths": [],
+      "observation_window_seconds": null
+    }
+  ],
+  "limitations": []
+}

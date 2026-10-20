@@ -77,7 +77,7 @@ First check to see if you already have a fork of this repository at:
 
 If you do not, then browse to this [repository](https://github.com/ros2/design) site and click on the "Fork" button:
 
-<img style="height: 50px;" src="/img/fork.png"/>
+<img style="height: 50px;" src="{{ "/img/fork.png" | relative_url }}"/>
 
 Github will now go off and create a fork of this repository into your Github account.
 Then you can clone your fork of the repository by running this command:

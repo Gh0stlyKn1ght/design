@@ -1,0 +1,8 @@
+[INFO] [1792515830.814557895] [rcl]: Found security directory: /lab/first/keystore/enclaves/security_lab/listener
+2026-10-20 17:03:50.829 [SECURITY Error] rq/talker/get_parametersRequest topic not found in allow rule. (./src/cpp/security/accesscontrol/Permissions.cpp:1245) -> Function check_create_datareader
+2026-10-20 17:03:50.829 [SECURITY Error] Error checking creation of local reader  (rq/talker/get_parametersRequest topic not found in allow rule. (./src/cpp/security/accesscontrol/Permissions.cpp:1245))
+ -> Function get_datareader_sec_attributes
+2026-10-20 17:03:50.829 [DATA_READER Error] Problem creating associated Reader -> Function enable
+terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+  what():  could not create service: create_service() failed to create request DataReader, at ./src/rmw_service.cpp:333, at ./src/rcl/service.c:159
+[ros2run]: Aborted

@@ -7,7 +7,7 @@ abstract:
   This article specifies the requirements for actions, how they've changed from ROS 1, and how they're communicated.
 author: '[Geoffrey Biggs](https://github.com/gbiggs) [Jacob Perron](https://github.com/jacobperron) [Shane Loretz](https://github.com/sloretz)'
 date_written: 2019-03
-last_modified: 2020-05
+last_modified: 2026-10
 published: true
 ---
 
@@ -424,6 +424,7 @@ This would be useful to alleviate extreme cases without the overhead of creating
 Reasons against using separate topics for feedback and status:
 - Most anticipated use cases will not involve many goals/clients (premature optimization)
 - Topics dynamically namespaced (e.g. by goal ID) would complicate ROS security by not having deterministic topic names before runtime and outside user control.
+  Stable names help generate policies, but names themselves are not an authorization boundary. The [revised access-control chapter](ros2_access_control_policies.html) explains how action operations expand into transport permissions that must be reviewed and tested.
 - Added complexity in C implementation and client libraries
 
 It seems reasonable in the future that the "keyed data" feature in DDS can be employed to reduce overhead in the "many goal/client" scenario.

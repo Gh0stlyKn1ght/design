@@ -1,0 +1,2 @@
+[INFO] [1792515831.715282551] [rcl]: Found security directory: /lab/second/keystore/enclaves/security_lab/listener
+[INFO] [1792515839.467594943] [rclcpp]: signal_handler(SIGINT/SIGTERM)

@@ -1,0 +1,31 @@
+{
+  "retrieved": "2026-10-20",
+  "sros2_commit": "80a08ffa1bccd2de602c2acd120b209ad5f8ce83",
+  "files": [
+    {
+      "file": "sros2/policy.xsd",
+      "url": "https://raw.githubusercontent.com/ros2/sros2/80a08ffa1bccd2de602c2acd120b209ad5f8ce83/sros2/sros2/policy/schemas/policy.xsd",
+      "sha256": "a8553fbb63f2b604a414a76d512728b37210918b9d14b4307b1ef236a30d4c7c"
+    },
+    {
+      "file": "sros2/permissions.xsd",
+      "url": "https://raw.githubusercontent.com/ros2/sros2/80a08ffa1bccd2de602c2acd120b209ad5f8ce83/sros2/sros2/policy/schemas/dds/permissions.xsd",
+      "sha256": "68d20551c2ef353002b056252b669f6508584296f175fe54d96130ef3fe2f870"
+    },
+    {
+      "file": "sros2/permissions.xsl",
+      "url": "https://raw.githubusercontent.com/ros2/sros2/80a08ffa1bccd2de602c2acd120b209ad5f8ce83/sros2/sros2/policy/templates/dds/permissions.xsl",
+      "sha256": "da395b88d9bca072977b3dacc07ca4e47c05d3c3fe1120dbcb131b3446168172"
+    },
+    {
+      "file": "sros2/LICENSE",
+      "url": "https://raw.githubusercontent.com/ros2/sros2/80a08ffa1bccd2de602c2acd120b209ad5f8ce83/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "file": "xml.xsd",
+      "url": "https://www.w3.org/2001/03/xml.xsd",
+      "sha256": "0ed94db44402526e7a683424d0bd4b65e5bc50e65d9b9a762b11b30bae06d0c8"
+    }
+  ]
+}

@@ -2,216 +2,168 @@
 layout: default
 title: ROS 2 DDS-Security integration
 permalink: articles/ros2_dds_security.html
-abstract: >
-  Robotics is full of experimentation: evaluating different hardware and software, pushing ahead with what works, and culling what doesn't.
-  ROS was designed to be flexible to enable this experimentation; to allow existing components to easily be combined with new ones or swapped with others.
-  In ROS 1, this flexibility was valued above all else, at the cost of security.
-  By virtue of being designed on top of DDS, ROS 2 is able to retain that flexibility while obtaining the ability to be secured by properly utilizing the DDS-Security specification.
-  This article describes how ROS 2 integrates with DDS-Security.
-author:  >
-  [Kyle Fazzari](https://github.com/kyrofa)
+abstract: DDS security properties, transport scope, enforced configuration, credentials, and a bounded SROS 2 lab.
+author: '[Kyle Fazzari](https://github.com/kyrofa)
+
+  '
 date_written: 2019-07
-last_modified: 2020-07
+last_modified: 2026-10
 published: true
 categories: Security
+revision_date: '2026-10-20'
+revision_author: '[Juan Carlos Nevarez · Gh0stlyKn1ght](https://github.com/Gh0stlyKn1ght)'
 ---
 
 {:toc}
 
-
 # {{ page.title }}
 
-<div class="abstract" markdown="1">
-{{ page.abstract }}
-</div>
+Original authors: {{ page.author }}
 
-Authors: {{ page.author }}
+2026 revision, security review, and additional material: {{ page.revision_author }}
 
-Date Written: {{ page.date_written }}
+Originally written: {{ page.date_written }} · Revised: {{ page.revision_date }}
 
-Last Modified: {% if page.last_modified %}{{ page.last_modified }}{% else %}{{ page.date_written }}{% endif %}
+> **Edition notice:** This is the October 2026 fork revision. It updates the technical guidance and preserves the original author credits. The [original article source](security_history/180_ros2_dds_security.md.txt) and the [historical print reader](../reports/security-review/security-reference-reader.pdf) remain available for comparison. Documentation and offline checks do not establish runtime security.
 
+## Goal and prerequisites
 
-# DDS-Security overview
+Explain which threats DDS security can address, configure enforcement deliberately, and identify controls that belong to the operating system or application.
+You should understand ROS nodes, topics, services, contexts, processes, and basic public-key certificates.
+Use the [access-control chapter](ros2_access_control_policies.html) for authorization and the [enclaves chapter](ros2_security_enclaves.html) for credential placement.
 
-The [DDS-Security specification][dds_security] expands upon the [DDS specification][dds], adding security enhancements by defining a Service Plugin Interface (SPI) architecture, a set of builtin implementations of the SPIs, and the security model enforced by the SPIs.
-Specifically, there are five SPIs defined:
+**Practical question:** If a participant presents a trusted certificate, should it be allowed to publish an actuator command?
+Authentication establishes an identity; permissions decide which operations it may perform, and the application still decides whether a permitted command is valid and safe.
 
-- **Authentication**: Verify the identity of a given domain participant.
-- **Access control**: Enforce restrictions on the DDS-related operations that can be performed by an authenticated domain participant.
-- **Cryptographic**: Handle all required encryption, signing, and hashing operations.
-- **Logging**: Provide the ability to audit DDS-Security-related events.
-- **Data tagging**: Provide the ability to add tags to data samples.
+## Scope and platform choice
 
-ROS 2's security features currently utilize only the first three.
-This is due to the fact that neither **Logging** nor **Data Tagging** are required in order to be compliant with the [DDS-Security spec][dds_security] (see section 2.3), and thus not all DDS implementations support them.
-Let's delve a little further into those first three plugins.
+This chapter describes **DDS-based ROS 2 middleware with DDS security support**.
+ROS 2 is middleware running on an operating system; it does not replace host access control, patching, network policy, or an independent safety system.
 
+Use one ROS distribution and one DDS implementation for the first exercise.
+The accompanying lab targets **Ubuntu 24.04, ROS 2 Jazzy, and `rmw_fastrtps_cpp`**, with exact installed package versions captured by the operator.
+This configuration was exercised in the isolated Ubuntu userspace described in the [runtime observations](../reports/security-handbook/runtime-observations.md): six ROS cases passed and the separate-authority case remained inconclusive.
 
-## Authentication
+For a new deployment, evaluate **Lyrical on Ubuntu 26.04** when hardware drivers and application packages support it.
+The official release table lists Lyrical support through May 2031 and Jazzy through May 2029.
+Crystal is end of life and belongs only in the historical case studies.
+Do not mix distribution-specific installation instructions or assume an existing robot can be upgraded without vendor validation.
+See the [official release table](https://github.com/ros2/ros2_documentation/blob/rolling/source/Releases.rst) and [Lyrical platform support](https://github.com/ros2/ros2_documentation/blob/rolling/source/Releases/lyrical/supported-platforms.rst).
 
-The **Authentication** plugin (see section 8.3 of the [DDS-Security spec][dds_security]) is central to the entire SPI architecture, as it provides the concept of a confirmed identity without which further enforcement would be impossible (e.g. it would be awfully hard to make sure a given ROS identity could only access specific topics if it was impossible to securely determine which identity it was).
+`rmw_zenoh_cpp` has a different configuration and trust model.
+Its security tooling can reuse SROS 2 policies and key material, but applies them through generated Zenoh session/router configurations.
+DDS governance files and these environment variables are not a universal recipe for every RMW.
+See the [Zenoh security tool documentation](https://github.com/ros2/rmw_zenoh/tree/rolling/zenoh_security_tools).
 
-The SPI architecture allows for a number of potential authentication schemes, but ROS 2 uses the builtin authentication plugin (called "DDS:Auth:PKI-DH", see section 9.3 of the [DDS-Security spec][dds_security]), which uses the proven Public Key Infrastructure (PKI).
-It requires a public and private key per domain participant, as well as an x.509 certificate that binds the participant's public key to a specific name.
-Each x.509 certificate must be signed by (or have a signature chain to) a specific Certificate Authority (CA) that the plugin is configured to trust.
+## DDS security properties
 
-The rationale for using the builtin plugin as opposed to anything else is twofold:
+The DDS Security architecture defines authentication, access-control, cryptographic, logging, and data-tagging plugin interfaces.
+The first three establish the main identity, authorization, and message-protection functions used here.
+Audit logging availability and data-tagging behavior depend on the vendor and build; do not infer that a usable audit trail exists because encryption is enabled.
 
-1. It's the only approach described in detail by the spec.
-2. It's mandatory for all compliant DDS implementations to interoperably support it (see section 2.3 of the [DDS-Security spec][dds_security]), which makes the ROS 2 security features work across vendors with minimal effort.
+| Property | What it establishes | What remains outside it |
+| --- | --- | --- |
+| Authentication | A participant can demonstrate an identity trusted by the configured authority. | Whether the holder is uncompromised or its command is appropriate. |
+| Access control | Signed governance and permissions authorize configured operations. | Host file access, process isolation, or command semantics. |
+| Cryptographic protection | Configured DDS traffic can receive integrity/authenticity and confidentiality protection. | Data after decryption, all metadata, non-DDS links, or availability under overload. |
+| Logging | Supported, configured security events can aid investigation. | Complete forensic evidence, retention policy, or tamper resistance by default. |
 
+The builtin plugin names commonly used in DDS security are `DDS:Auth:PKI-DH`, `DDS:Access:Permissions`, and `DDS:Crypto:AES-GCM-GMAC`.
+The access-control name is plural **Permissions**.
+Use your vendor's documentation for supported algorithms, protection settings, and plugin-loading requirements; do not design a new cryptographic scheme for a tutorial.
 
-## Access control
+The original design cited DDS Security 1.1.
+[OMG now publishes version 1.2](https://www.omg.org/spec/DDS-SECURITY/1.2).
+That does not prove a particular ROS package implements every 1.2 feature.
+Record the standard basis supported by the actual middleware and avoid copying old section numbers into a new compatibility claim.
 
-The **Access control** plugin (see section 8.4 of the [DDS-Security spec][dds_security]) deals with defining and enforcing restrictions on the DDS-related capabilities of a given domain participant.
-For example, it allows a user to restrict a particular participant to a specific DDS domain, or only allow the participant to read from or write to specific DDS topics, etc.
+### Interoperability is a test obligation
 
-Again the SPI architecture allows for some flexibility in how the plugins accomplish this task, but ROS 2 uses the builtin access control plugin (called "DDS:Access:Permission", see section 9.4 of the [DDS-Security spec][dds_security]), which again uses PKI.
-It requires two files per domain participant:
+The official Jazzy [security setup source](https://github.com/ros2/ros2_documentation/blob/jazzy/source/Tutorials/Advanced/Security/Introducing-ros2-security.rst) says secure cross-vendor communication is not supported.
+Keep the same vendor for this lab.
+If a project requires a different combination, verify its support statement and test the exact versions, governance, permissions, discovery behavior, and recovery paths.
+Using standard plugin names alone is not proof that the combination works.
 
-- **Governance** file: A signed XML document specifying how the domain should be secured.
-- **Permissions** file: A signed XML document containing the permissions of the domain participant, bound to the name of the participant as defined by the authentication plugin (which is done via an x.509 cert, as we just discussed).
+## Governance, permissions, and identity
 
-Both of these files must be signed by a CA which the plugin is configured to trust.
-This may be the same CA that the **Authentication** plugin trusts, but that isn't required.
+**Identity certificates** bind a participant's public key to a subject trusted by the identity authority.
+**Governance** specifies domain/topic protection and admission behavior.
+**Permissions** grant operations to a certificate subject for domains and topics during a validity interval.
+Permissions need signing; editing XML without producing a matching signed permissions file does not update the runtime policy.
 
-The rationale for using the builtin plugin as opposed to anything else is the same as the **Authentication** plugin:
+Review governance explicitly: unauthenticated-participant admission, join access control, discovery protection, metadata protection, and payload protection.
+A participant joining a domain is not the same operation as publishing or subscribing to a particular topic.
+Inspect generated governance and permissions rather than assuming a tool's example defaults meet your deployment requirements.
 
-1. It's the only approach described in detail by the spec.
-2. It's mandatory for all compliant DDS implementations to interoperably support it (see section 2.3 of the [DDS-Security spec][dds_security]), which makes the ROS 2 security features work across vendors with minimal effort.
+Neither the ROS node name, its namespace, nor `ROS_DOMAIN_ID` is an authenticated security identity.
+A domain ID separates discovery domains by convention; it is not an access-control boundary.
+An authorized process can still misuse the permissions granted to its identity.
 
+## Configure enforcement deliberately
 
-## Cryptographic
+For a DDS RMW, set the environment in **every participating terminal or service**, and select an absolute enclave path separately:
 
-The **Cryptographic** plugin (see section 8.5 of the [DDS-Security spec][dds_security]) is where all the cryptography-related operations are handled: encryption, decryption, signing, hashing, etc.
-Both the **Authentication** and **Access control** plugins utilize the capabilities of the **Cryptographic** plugin in order to verify signatures, etc.
-This is also where the functionality to encrypt DDS topic communication resides.
-
-While the SPI architecture again allows for a number of possibilities, ROS 2 uses the builtin cryptographic plugin (called "DDS:Crypto:AES-GCM-GMAC", see section 9.5 of the [DDS-Security spec][dds_security]), which provides authenticated encryption using Advanced Encryption Standard (AES) in Galois Counter Mode (AES-GCM).
-
-The rationale for using the builtin plugin as opposed to anything else is the same as the other plugins:
-
-1. It's the only approach described in detail by the spec.
-2. It's mandatory for all compliant DDS implementations to interoperably support it (see section 2.3 of the [DDS-Security spec][dds_security]), which makes the ROS 2 security features work across vendors with minimal effort.
-
-
-# DDS-Security integration with ROS 2: SROS 2
-
-Now that we have established some shared understanding of how security is supported in DDS, let's discuss how that support is exposed in ROS 2.
-By default, none of the security features of DDS are enabled in ROS 2.
-The set of features and tools in ROS 2 that are used to enable them are collectively named "Secure ROS 2" (SROS 2).
-
-
-## Features in the ROS client library (RCL)
-
-Most of the user-facing runtime support for SROS 2 is contained within the [ROS Client Library](https://github.com/ros2/rcl).
-Once its requirements are satisfied it takes care of configuring the middleware support for each supported DDS implementation.
-RCL includes the following features for SROS 2:
-
-- Support for security files for each domain participant.
-- Support for both permissive and strict enforcement of security.
-- Support for a master "on/off" switch for all SROS 2 features.
-
-Let's discuss each of these in turn.
-
-
-### Security files for each domain participant
-
-As stated earlier, the DDS-Security plugins require a set of security files (e.g. keys, governance and permissions files, etc.) per domain participant.
-Domain participants map to a context within process in ROS 2, so each process requires a set of these files.
-RCL supports being pointed at a directory containing security files in two different ways:
-
-- Directory tree of all security files.
-- Manual specification.
-
-Let's delve further into these.
-
-
-#### Directory tree of all security files
-
-RCL supports finding security files in one directory that is inside the reserved `enclaves` subfolder, within the root keystore, corresponding to the fully-qualified path of every enclave.
-For example, for the `/front/camera` enclave, the directory structure would look like:
-
-    <root>
-    ├── enclaves
-    │   └── front
-    │       └── camera
-    │           ├── cert.pem
-    │           ├── key.pem
-    │           ├── ...
-    └── public
-        ├── ...
-
-The set of files expected within each enclave instance directory are:
-
-- **identity_ca.cert.pem**: The x.509 certificate of the CA trusted by the **Authentication** plugin (the "Identity" CA).
-- **cert.pem**: The x.509 certificate of this enclave instance (signed by the Identity CA).
-- **key.pem**: The private key of this enclave instance.
-- **permissions_ca.cert.pem**: The x.509 certificate of the CA trusted by the **Access control** plugin (the "Permissions" CA).
-- **governance.p7s**: The XML document that specifies to the **Access control** plugin how the domain should be secured  (signed by the Permissions CA).
-- **permissions.p7s**: The XML document that specifies the permissions of this particular enclave instance to the **Access control** plugin (also signed by the Permissions CA).
-
-This can be specified by setting the `ROS_SECURITY_KEYSTORE` environment variable to point to the root of the keystore directory tree, and then specifying the enclave path using the `--ros-args` runtime argument `-e`, `--enclave`, e.g.:
-
-``` shell
-export ROS_SECURITY_KEYSTORE="/home/bob/.ros/sros2_keystore"
-ros2 run <package> <executable> --ros-args --enclave="/front/camera"
+```sh
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export ROS_SECURITY_KEYSTORE="$HOME/ros2-security-lab/keystore"
+export ROS_SECURITY_ENABLE=true
+export ROS_SECURITY_STRATEGY=Enforce
+ros2 run demo_nodes_cpp talker --ros-args --enclave /security_lab/talker
 ```
 
-#### Manual specification
+`ROS_SECURITY_KEYSTORE` points to the **keystore root containing `enclaves/`**.
+The expected runtime files normally include `cert.pem`, `key.pem`, `identity_ca.cert.pem`, `permissions_ca.cert.pem`, `governance.p7s`, and `permissions.p7s`.
+The process needs read access only to its required material.
 
-RCL also supports specifying the enclave path for the process that needs to be launched using an overriding environmental variable.
-This can be done by setting the `ROS_SECURITY_ENCLAVE_OVERRIDE` environment variable to an alternate enclave path within the keystore.
-Note that this setting takes precedence over `ROS_SECURITY_KEYSTORE` with `--enclave`.
+`ROS_SECURITY_ENABLE=true` enables the DDS security path; `ROS_SECURITY_STRATEGY=Enforce` requests failure when required security configuration cannot be established.
+Without the deliberate enforcement setting, permissive fallback can permit unsecured startup when material is missing.
+Treat a successful process launch as insufficient evidence: test authorized delivery and rejection separately.
 
-Note that the following two examples load from the same enclave path as demonstrated prior:
+`ROS_SECURITY_ENCLAVE_OVERRIDE` overrides the selected enclave path.
+It does not replace the keystore root.
+Remove an unexpected inherited override before a controlled exercise:
 
-``` shell
-export ROS_SECURITY_KEYSTORE="/home/bob/.ros/sros2_keystore"
-export ROS_SECURITY_ENCLAVE_OVERRIDE="/front/camera"
-ros2 run <package> <executable>
+```sh
+unset ROS_SECURITY_ENCLAVE_OVERRIDE
 ```
 
-``` shell
-export ROS_SECURITY_KEYSTORE="/home/bob/.ros/sros2_keystore"
-export ROS_SECURITY_ENCLAVE_OVERRIDE="/front/camera"
-ros2 run <package> <executable> --ros-args --enclave="/spam"
-```
+A CLI or daemon is another participant and needs an appropriate identity and policy.
+Use a dedicated inspection identity in a deployed system; copying a production participant's keys into an administrator's shell enlarges its trust boundary.
 
-### Support for both permissive and strict enforcement of security
+## Credential lifecycle and host controls
 
-Participants with the security features enabled will not communicate with participants that don't, but what should RCL do if one tries to launch a participant that has no discernable enclave with keys/permissions/etc.? It has two options:
+Keep signing-authority private keys away from runtime robots.
+An enclave private key is still a secret even though it is inside the `enclaves/` directory.
+An SROS 2 enclave is a credential/policy grouping, not a hardware protected execution environment.
 
-- **Permissive mode**: Try to find security files, and if they can't be found, launch the participant without enabling any security features.
-This is the default behavior.
-- **Strict mode**: Try to find security files, and if they can't be found, fail to run the participant.
+Define provisioning, expiry, renewal, compromise response, backup, policy signing, clock requirements, and recovery ownership.
+For revocation or hardware-backed keys, obtain a vendor/version-specific implementation and test it.
+Do not assume an online revocation service or hardware key integration is available in every DDS security stack.
+Keep software-update signing separate from participant identity and permission signing.
 
-The type of mode desired can be specified by setting the `ROS_SECURITY_STRATEGY` environment variable to "Enforce" (case-sensitive) for strict mode, and anything else for permissive mode.
+Run services with separate OS identities where meaningful, restrict file access and capabilities, patch supported packages, and protect remote administration.
+Middleware authentication does not stop a privileged local attacker from reading accessible keys or replacing an application binary.
+A firewall, VPN, or container can add boundaries; none substitutes for a tested participant policy.
 
+## Bounded exercise and evidence
 
-### Support for a master "on/off" switch for all SROS 2 features
+Use the [included lab](https://github.com/Gh0stlyKn1ght/design/blob/gh-pages/examples/security-lab/README.md) on an isolated, non-actuating workstation.
+It supplies a policy, an offline schema/transform check, a setup script that refuses to overwrite a keystore, and expected positive/negative cases.
+The offline checks validate generated permission structure and scope; the ROS communication cases must be run on the selected ROS host.
 
-In addition to the supported features just discussed, RCL also supports a master shutoff for security features for easy experimentation.
-If it's turned off (the default), none of the above security features will be enabled.
+Produce a version manifest, a diagram, the reviewed governance and signed permissions hashes, and observations for authorized delivery, a missing enclave, an untrusted identity, and a forbidden topic.
+A silent listener alone is not evidence of authorization working; rule out networking, type, and QoS failures using the authorized control case and logs.
 
-In order to enable SROS 2, set the `ROS_SECURITY_ENABLE` environment variable to "true" (case-sensitive).
-To disable, set to any other value.
+**Explain back:** Why can an authenticated participant be forbidden from publishing `/cmd_vel`? Why can a stolen authorized key still be dangerous when traffic is encrypted?
 
+**Common misconceptions:** enabling security is not the same as enforcing a restrictive policy; encrypting a channel does not validate application commands; distinct node names do not isolate shared process memory.
 
-## Features in the SROS 2 CLI
+**Limit:** the recorded software tests do not establish physical-robot safety, host isolation, revocation behavior, or packet-level confidentiality. The separate-authority result still needs stronger rejection evidence.
+Next, define the exact publish/subscribe/service/action privileges in the access-control chapter.
 
-Configuring a ROS 2 system to be secure in RCL involves a lot of new technology (PKI, DDS governance and permissions files and their syntax, etc.).
-If a user is comfortable with these technologies, the above information should be all that's necessary to properly lock things down.
-However, the [SROS 2 CLI](https://github.com/ros2/sros2) should include a tool `ros2 security` to help those who don't want to set it all up themselves, including the following capabilities:
+## Sources
 
-- Create Identity and Permissions CA.
-- Create directory tree containing all security files.
-- Create a new identity for a given enclave, generating a keypair and signing its x.509 certificate using the Identity CA.
-- Create a governance file that will encrypt all DDS traffic by default.
-- Support specifying enclave permissions [in familiar ROS terms](/articles/ros2_access_control_policies.html) which are then automatically converted into low-level DDS permissions.
-- Support automatically discovering required permissions from a running ROS system.
-
-
-[dds_security]: https://www.omg.org/spec/DDS-SECURITY/1.1/PDF
-[dds]: https://www.omg.org/spec/DDS/1.4/PDF
+- [SROS 2 project](https://github.com/ros2/sros2), using distribution branches and pinned versions.
+- [Fast DDS security](https://fast-dds.docs.eprosima.com/en/latest/fastdds/security/security.html).
+- [Cyclone DDS security](https://cyclonedds.io/docs/cyclonedds/latest/security.html).
+- [DDS Security 1.1](https://www.omg.org/spec/DDS-SECURITY/1.1) and [1.2](https://www.omg.org/spec/DDS-SECURITY/1.2).

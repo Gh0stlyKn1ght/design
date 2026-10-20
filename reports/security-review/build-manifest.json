@@ -1,0 +1,168 @@
+{
+  "matrix_tables": [
+    {
+      "name": "Generic threats",
+      "columns": 27,
+      "records": 43
+    },
+    {
+      "name": "TurtleBot threats",
+      "columns": 11,
+      "records": 47
+    },
+    {
+      "name": "MARA threats",
+      "columns": 14,
+      "records": 35
+    }
+  ],
+  "figures": [
+    {
+      "number": 1,
+      "path": "articles/ros2_threat_model/RobotSystemThreatModel.png",
+      "alt": "Robot System Threat Model",
+      "width": 1251,
+      "height": 464
+    },
+    {
+      "number": 2,
+      "path": "articles/ros2_threat_model/ROS2_Application.png",
+      "alt": "ROS 2 Application",
+      "width": 1429,
+      "height": 1688
+    },
+    {
+      "number": 3,
+      "path": "articles/ros2_threat_model/signing_service_mitigation.jpg",
+      "alt": "Signing Service Mitigation",
+      "width": 1012,
+      "height": 455
+    },
+    {
+      "number": 4,
+      "path": "articles/ros2_threat_model/attack_tree.jpg",
+      "alt": "Signing Service Mitigation",
+      "width": 1532,
+      "height": 1592
+    },
+    {
+      "number": 5,
+      "path": "articles/ros2_threat_model/MARA-ROS2_Application.png",
+      "alt": "ROS 2 Application",
+      "width": 3292,
+      "height": 2151
+    },
+    {
+      "number": 6,
+      "path": "articles/ros2_threat_model/threat_model_mara.png",
+      "alt": "Robot System Threat Model",
+      "width": 1952,
+      "height": 933
+    },
+    {
+      "number": 7,
+      "path": "articles/ros2_threat_model/attack_tree_physical.png",
+      "alt": "Physical vector attack tree",
+      "width": 816,
+      "height": 436
+    },
+    {
+      "number": 8,
+      "path": "articles/ros2_threat_model/attack_tree_physical_arch.png",
+      "alt": "Physical vector attack architecture",
+      "width": 1540,
+      "height": 2223
+    },
+    {
+      "number": 9,
+      "path": "articles/ros2_threat_model/attack_tree_ros2.png",
+      "alt": "ROS 2 API vector attack tree",
+      "width": 1351,
+      "height": 672
+    },
+    {
+      "number": 10,
+      "path": "articles/ros2_threat_model/attack_tree_ros2_arch.png",
+      "alt": "ROS 2 API vector attack architecture",
+      "width": 2222,
+      "height": 2281
+    },
+    {
+      "number": 11,
+      "path": "articles/ros2_threat_model/attack_tree_api.png",
+      "alt": "H-ROS API vector attack tree",
+      "width": 692,
+      "height": 761
+    },
+    {
+      "number": 12,
+      "path": "articles/ros2_threat_model/attack_tree_api_arch.png",
+      "alt": "H-ROS API vector attack architecture",
+      "width": 1422,
+      "height": 2222
+    },
+    {
+      "number": 13,
+      "path": "articles/ros2_threat_model/attack_tree_repo.png",
+      "alt": "Code repository compromise attack tree",
+      "width": 1837,
+      "height": 1545
+    },
+    {
+      "number": 14,
+      "path": "articles/ros2_threat_model/attack_tree_repo_arch.png",
+      "alt": "Code repository attack architecture",
+      "width": 2222,
+      "height": 1440
+    },
+    {
+      "number": 15,
+      "path": "articles/ros2_threat_model/vulns.png",
+      "alt": "Signing Service Mitigation",
+      "width": 3839,
+      "height": 1685
+    }
+  ],
+  "layout_overflows": {
+    "security-review-report": [],
+    "security-reference-reader": [],
+    "security-figure-atlas": []
+  },
+  "source_table_omissions": [
+    {
+      "columns": 14,
+      "missing_positions": [
+        14
+      ],
+      "threat": "An attacker can prevent a component running on the robot from executing\nnormally."
+    }
+  ],
+  "source_table_extra_cells": [
+    {
+      "columns": 14,
+      "actual_columns": 15,
+      "threat": "An attacker modifies configuration values without authorization."
+    },
+    {
+      "columns": 14,
+      "actual_columns": 15,
+      "threat": "An attacker accesses configuration values without authorization."
+    },
+    {
+      "columns": 14,
+      "actual_columns": 15,
+      "threat": "A user accidentally misconfigures the robot."
+    }
+  ],
+  "preserved_table_cells": 2321,
+  "source_revision": "93a415bf928751d37fce6f83215c521658e20c93",
+  "review_date": "2026-10-20",
+  "dependencies": {
+    "weasyprint": "69.0",
+    "Markdown": "3.10.3",
+    "beautifulsoup4": "4.15.0",
+    "PyYAML": "6.0.3",
+    "Pillow": "12.3.0"
+  },
+  "core_source_lines": 6207
+}

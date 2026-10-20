@@ -1,0 +1,33 @@
+{
+  "url": "http://127.0.0.1:4307/design",
+  "pages": [
+    {
+      "route": "/",
+      "status": 200,
+      "h1": "ROS 2 Design"
+    },
+    {
+      "route": "/articles/ros2_dds_security.html",
+      "status": 200,
+      "h1": "ROS 2 DDS-Security integration"
+    },
+    {
+      "route": "/articles/ros2_access_control_policies.html",
+      "status": 200,
+      "h1": "ROS 2 Access Control Policies"
+    },
+    {
+      "route": "/articles/ros2_security_enclaves.html",
+      "status": 200,
+      "h1": "ROS 2 Security Enclaves"
+    },
+    {
+      "route": "/articles/ros2_threat_model.html",
+      "status": 200,
+      "h1": "ROS 2 Robotic Systems Threat Model"
+    }
+  ],
+  "asset_failures": [],
+  "javascript_errors": [],
+  "mobile_horizontal_overflow": false
+}

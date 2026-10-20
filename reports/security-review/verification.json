@@ -1,0 +1,32 @@
+{
+  "paper_sizes": {
+    "security-review-report": [
+      612,
+      792
+    ],
+    "security-reference-reader": [
+      612,
+      792
+    ],
+    "security-figure-atlas": [
+      792,
+      612
+    ]
+  },
+  "page_counts": {
+    "security-review-report": 8,
+    "security-reference-reader": 139,
+    "security-figure-atlas": 16
+  },
+  "matrix_records": {
+    "GEN": 43,
+    "TB3": 47,
+    "MARA": 35
+  },
+  "preserved_table_cells": 2321,
+  "embedded_figures": 15,
+  "render_overflows": 0,
+  "source_hashes_verified": 16,
+  "physical_print_verified": false,
+  "runtime_security_tested": false
+}

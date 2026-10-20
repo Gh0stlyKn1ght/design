@@ -1,0 +1,7 @@
+[INFO] [1792515831.215868036] [rcl]: Found security directory: /lab/first/keystore/enclaves/security_lab/listener
+NODE_READY
+2026-10-20 17:03:51.296 [SECURITY Error] rt/chatter topic not found in allow rule. (./src/cpp/security/accesscontrol/Permissions.cpp:1191) -> Function check_create_datawriter
+2026-10-20 17:03:51.296 [SECURITY Error] Error checking creation of local writer  (rt/chatter topic not found in allow rule. (./src/cpp/security/accesscontrol/Permissions.cpp:1191))
+ -> Function get_datawriter_sec_attributes
+2026-10-20 17:03:51.296 [DATA_WRITER Error] Problem creating associated Writer -> Function enable
+{"phase": "create_publisher", "publisher_created": false, "error": "Failed to create publisher: create_publisher() could not create data writer, at ./src/publisher.cpp:275, at ./src/rcl/publisher.c:117"}

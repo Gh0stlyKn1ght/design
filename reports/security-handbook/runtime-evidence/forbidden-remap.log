@@ -1,0 +1,8 @@
+[INFO] [1792515830.542377504] [rcl]: Found security directory: /lab/first/keystore/enclaves/security_lab/talker
+2026-10-20 17:03:50.569 [SECURITY Error] rt/not_chatter topic not found in allow rule. (./src/cpp/security/accesscontrol/Permissions.cpp:1191) -> Function check_create_datawriter
+2026-10-20 17:03:50.569 [SECURITY Error] Error checking creation of local writer  (rt/not_chatter topic not found in allow rule. (./src/cpp/security/accesscontrol/Permissions.cpp:1191))
+ -> Function get_datawriter_sec_attributes
+2026-10-20 17:03:50.569 [DATA_WRITER Error] Problem creating associated Writer -> Function enable
+terminate called after throwing an instance of 'rclcpp::exceptions::RCLError'
+  what():  could not create publisher: create_publisher() could not create data writer, at ./src/publisher.cpp:275, at ./src/rcl/publisher.c:117
+[ros2run]: Aborted

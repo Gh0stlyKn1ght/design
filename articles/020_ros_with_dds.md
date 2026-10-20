@@ -7,7 +7,7 @@ abstract:
   The results of the "ros_dds" prototype are also summarized and used in the exploration of the issue.
 author: '[William Woodall](https://github.com/wjwwood)'
 date_written: 2014-06
-last_modified: 2019-07
+last_modified: 2026-10
 published: true
 categories: Middleware
 ---
@@ -82,6 +82,8 @@ There are some examples of committees coming up with well intentioned and well d
 There is also a concern that DDS is a static specification which was defined and is used in "legacy" systems, but has not kept current.
 This kind of stereotype comes from horror stories about things like UML and CORBA, which are also products of OMG.
 On the contrary, DDS seems to have an active and organic specification, which in the recent past has added, or is adding, more specifications for things like websockets, security over SSL, extensible types, request and response transport, and a new, more modern C++11 style API specification for the core API to replace the existing C++ interface.
+
+> October 2026 security clarification by [Juan Carlos Nevarez · Gh0stlyKn1ght](https://github.com/Gh0stlyKn1ght): this paragraph records the original middleware-selection discussion. Use the [revised DDS security chapter](ros2_dds_security.html) for participant authentication, signed authorization policies and traffic protection. A reference to SSL/TLS does not describe the complete DDS security model or establish protection for every ROS transport.
 This type of evolution in the standard body for DDS is an encouraging thing to observe, and even though the body is relatively slow, as compared to software engineering technology trends, it is evolving to meet demands of its users.
 
 ### Technical Credibility

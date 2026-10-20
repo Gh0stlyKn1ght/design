@@ -1,0 +1,348 @@
+{
+  "edition": "2026-10-20",
+  "author": "Juan Carlos Nevarez \u00b7 Gh0stlyKn1ght",
+  "source_state": "Technical revision; consult publication verification for release state",
+  "historical_baseline_revision": "93a415bf928751d37fce6f83215c521658e20c93",
+  "documents": {
+    "security-handbook": {
+      "pages": 43,
+      "overflow_flags": []
+    },
+    "update-summary": {
+      "pages": 7,
+      "overflow_flags": []
+    },
+    "trust-boundaries-landscape": {
+      "pages": 1,
+      "overflow_flags": []
+    }
+  },
+  "runtime_tested": true,
+  "physical_print_verified": false,
+  "sources": [
+    {
+      "path": "articles/180_ros2_dds_security.md",
+      "sha256": "619cc03969c7c93847c5150cb71d6b7075cbb5d52c94dc4ec2c701c4f2ebfbd1"
+    },
+    {
+      "path": "articles/181_ros2_access_control_policies.md",
+      "sha256": "17490b05bc34ffc755e88731cc7b90845cbe475795c10c9cb268b5af8e1cbfcd"
+    },
+    {
+      "path": "articles/182_ros2_security_enclaves.md",
+      "sha256": "18b81640ad224c4267780846be7f70b64fb5090bcae57832cad54d20cfa4bdb3"
+    },
+    {
+      "path": "articles/183_ros2_threat_model.md",
+      "sha256": "3a63065a51fc9f2291f98207a06e921be64a2fa6d8c8886effbd65a97416c008"
+    },
+    {
+      "path": "articles/160_ros_command_line_arguments.md",
+      "sha256": "f179e2618cbe022583cb3027ff4892410c600aca8c668cc2232390316a959458"
+    },
+    {
+      "path": "articles/170_node_to_participant_mapping.md",
+      "sha256": "bb81e8fb9b661f92e9477a8e92259908ed853134a64580b4f4bef6979868e403"
+    },
+    {
+      "path": "articles/020_ros_with_dds.md",
+      "sha256": "c0c491ab94b29d1f48b8b9e1a61a7e82727cd9b01acc6bc2e5c3de26ba739298"
+    },
+    {
+      "path": "articles/actions.md",
+      "sha256": "af188e545c46d5a6162d98d727b0b0e60b8232f3a4e1938a669bd13356e79236"
+    },
+    {
+      "path": "articles/unique_network_flows.md",
+      "sha256": "8a313bd263110a6c1bf9c8b752b15989bcae3fd9fcb2a579c2c70db1e44bbfc2"
+    },
+    {
+      "path": "README.md",
+      "sha256": "1b01cd7fbf6534136ec0ab9ea21e3f5888b8f2698cd59b6ddcced4238481d62b"
+    },
+    {
+      "path": "reports/security-handbook/changes.md",
+      "sha256": "0261eb16c7a49bc30d24ba7a89c1b9ce8c6d7faf7d966bcdc9826f07087badb3"
+    },
+    {
+      "path": "reports/security-handbook/technology-choices.md",
+      "sha256": "7b1a1a223cf52597ac8dae92832e2e90f2b7e4f23f1d6904a814d2bbfbb8de9e"
+    },
+    {
+      "path": "reports/security-handbook/runtime-observations.md",
+      "sha256": "41fb55f15544a9b829fd53b32baf8839aa3325504da5ee861303ab27d963712a"
+    },
+    {
+      "path": "examples/security-lab/README.md",
+      "sha256": "4fa304da355e88b7a787b7dabf685c114d6b36f42216dec3ac4ab5b321d4081f"
+    },
+    {
+      "path": "examples/security-lab/authentication_probe.cpp",
+      "sha256": "cd1fb2baece0ae2a9faf54a2605ff98cf5e37878af9b2be453b32b2ff72a6211"
+    },
+    {
+      "path": "examples/security-lab/capture_versions.py",
+      "sha256": "d4717dc89e5240b17adddc6b33f2e1d44ae71d0b38351074651e96278eff4e91"
+    },
+    {
+      "path": "examples/security-lab/check_policy.py",
+      "sha256": "0ac97f6e0eb36d039e8724111c112ac0a34929844a829fcbecab18c44463d5a5"
+    },
+    {
+      "path": "examples/security-lab/environment.sh",
+      "sha256": "4fd7c78984ea0b953c83cd761369fde4b41fc1d45ef5f730572f02bebe09baab"
+    },
+    {
+      "path": "examples/security-lab/generated/permissions.xml",
+      "sha256": "3d81df4a395bb9d7c11888aaa996c71ce8877404294c47f398b7d0d0a2e2f58e"
+    },
+    {
+      "path": "examples/security-lab/generated/policy-check.json",
+      "sha256": "45ee36179f78f721cc0d2628e1d55b5d81337ad865a14599a233efb2c9ee418a"
+    },
+    {
+      "path": "examples/security-lab/policy.xml",
+      "sha256": "64b1e80fd338485508d555beed35538b2223729b6b1277222a85a18db6cfa3bc"
+    },
+    {
+      "path": "examples/security-lab/probe_publish.py",
+      "sha256": "52a3bcc3dfe8151933eaadb8c327b0446fa63abe1fc17cdc2ea154c171dbeb1c"
+    },
+    {
+      "path": "examples/security-lab/results-template.json",
+      "sha256": "6c6527e8138d0d9237044aa5dcad258100678dad5a9cb96ac4eaff7478a8c79f"
+    },
+    {
+      "path": "examples/security-lab/run_runtime.py",
+      "sha256": "afc9b61888aed94ee23f2bafd3b11927c58007f74a5f20d9b81fd21fbd71d9d6"
+    },
+    {
+      "path": "examples/security-lab/setup.sh",
+      "sha256": "08c70fee05a5c51f1cfb67e6672f33116e6b9d656bdee412cdb21cabbe1fb70b"
+    },
+    {
+      "path": "examples/security-lab/test_policy.py",
+      "sha256": "c68bcdf044625ade172e377695da642a63e223d06417b5aad846a152f552fc8b"
+    },
+    {
+      "path": "examples/security-lab/threat-register.json",
+      "sha256": "2e973fa9694af4cfa152da6338232e98c4a75eaa515bdb61892cb1ed8f77b13b"
+    },
+    {
+      "path": "examples/security-lab/vendor/NOTICE.md",
+      "sha256": "63538420233438080a086dcf855c1b69af1b7bce39f29f9997f34be58ba1057b"
+    },
+    {
+      "path": "examples/security-lab/vendor/sources.json",
+      "sha256": "7309b52c02a3e050837448ed4d3e00dbcd67d97b7110bb2992bf3c96e42c5490"
+    },
+    {
+      "path": "examples/security-lab/vendor/sros2/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "path": "examples/security-lab/vendor/sros2/permissions.xsd",
+      "sha256": "68d20551c2ef353002b056252b669f6508584296f175fe54d96130ef3fe2f870"
+    },
+    {
+      "path": "examples/security-lab/vendor/sros2/permissions.xsl",
+      "sha256": "da395b88d9bca072977b3dacc07ca4e47c05d3c3fe1120dbcb131b3446168172"
+    },
+    {
+      "path": "examples/security-lab/vendor/sros2/policy.xsd",
+      "sha256": "a8553fbb63f2b604a414a76d512728b37210918b9d14b4307b1ef236a30d4c7c"
+    },
+    {
+      "path": "examples/security-lab/vendor/xml.xsd",
+      "sha256": "0ed94db44402526e7a683424d0bd4b65e5bc50e65d9b9a762b11b30bae06d0c8"
+    },
+    {
+      "path": "img/security/trust-boundaries.dot",
+      "sha256": "95230b76d9c78b7d985c22e62a550cbfcda3d94bdc744096ef25bbe68b7caf4a"
+    },
+    {
+      "path": "img/security/trust-boundaries.pdf",
+      "sha256": "81daef7e4e27245038f12945b35d4192507e86dcbed836c64af671c759fadb61"
+    },
+    {
+      "path": "img/security/trust-boundaries.svg",
+      "sha256": "ff915225b2b21a57348b2648ae071088841b59d820f0465bf45a777db81d8fdd"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/authentication-results.json",
+      "sha256": "ad16c4ff1e58f611748df94f5f9a79bef4e03cbbcb39e806106a5c8ebf9d3447"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/authentication-trusted-probe.log",
+      "sha256": "ec823ddfcca7823a5199a9eae78c6129ac91cca9a196e98249c94c187c1cc67b"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/authentication-trusted-talker.log",
+      "sha256": "9df1e559d3c15a3977a7be02a6dc3b1a6b9ebc86703f0d88f03b02991118262b"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/authentication-untrusted-probe.log",
+      "sha256": "e8caf3dc92cb56e563fef364a929ffb703286caac8b7f6d18cfc84e672d8bf2f"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/authentication-untrusted-talker.log",
+      "sha256": "a111c32e2a0a25fab2cac78a558cd78df72267de0c73bbdad9d7fceea633aa42"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/authorized-after-negative-cases-listener.log",
+      "sha256": "0492d16c910ea5b18611a09ce3892a8fa54436eb05ca347ef53b1870fa7ce888"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/authorized-after-negative-cases-talker.log",
+      "sha256": "ac3d8633eda7f78c6e81e5714723c24f5cd066fc2dbb4360c1ec32c19d4679cd"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/authorized-listener.log",
+      "sha256": "624aaeb37b9f402a66b7f0a67ae80fa549d23852a3b53b24e0596b3e8b8c261d"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/authorized-talker.log",
+      "sha256": "dc17698026ed81b61d09e24ae5bbcb46d65222a4860c8855d2cbf42633d3f0f6"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/environment-provenance.json",
+      "sha256": "a7ee5b12b228f13ef9adaa6e2e4b2b3d920d50b773b2c45b78f4087094ae17a4"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/forbidden-remap.log",
+      "sha256": "adc90da0b050dd8c14598464c54933a5c3d034a45898866cbc0d2bd338e405ac"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/listener-permissions.xml",
+      "sha256": "85c85cd4dd124850f250c02b4ade907b61bb66fb9461c0bf4f080c71cf4a2f8e"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/listener-publish-probe.log",
+      "sha256": "558a711dfa075dd830b9f46109c71fb0ae994ae53b1a725a908d42e3948256d7"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/manifest.json",
+      "sha256": "2ee6cfa8137308af7573fceef859285c0fd974f7111ed29c7f62f178cb285675"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/missing-enclave.log",
+      "sha256": "04e49021fc7e67a1cca9e9e6748471881c51111b3b21283e65925113ad12936f"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/results.json",
+      "sha256": "c3765490a1dd5851087b23508326b8ddde8f5f7c7206740126913eacf5ac64c4"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/runtime-permission-check.json",
+      "sha256": "4a66469328b6800d914c0642855da15f1c25ae69bad5cc1ef1d346b1db286dc6"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/talker-permissions.xml",
+      "sha256": "fd25b4fbe170651c486f1298e77853c4da88f58c56f8414e75e33133631a81c7"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/untrusted-authority-listener.log",
+      "sha256": "3c99c1a23b93ee5dc64ded7e595db02e61022ef07e496296dfb89639a6bace51"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/untrusted-authority-talker.log",
+      "sha256": "6dc776d36772b38af2a47a94d0027d135fc13434809a06dcd767b5a0023bc69f"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/versions.json",
+      "sha256": "379b147db1ee13201f3605b82a56f8bc60b8090966c993afdd3ef9c7b03e8d5d"
+    },
+    {
+      "path": "reports/security-handbook/runtime-evidence/wrong-profile.log",
+      "sha256": "211b4e5aa9344084016727b512055830f6add220eec51ed630a355f3584c9fe2"
+    },
+    {
+      "path": "reports/security-handbook/source-review.json",
+      "sha256": "cd0d4dd9240f234853723352da19090b18ef63be88d898a7ac52aedf28a92436"
+    },
+    {
+      "path": "tools/security-handbook/build.py",
+      "sha256": "0a2c6f3a5eaa3056be9ad7f615c5dfb5406c032351240fc94c8e9c283ba23417"
+    },
+    {
+      "path": "tools/security-handbook/requirements.txt",
+      "sha256": "d8dc01f29d83d93888f0fbf1ef89ac188af978a92190e58c10fd5cc084929648"
+    },
+    {
+      "path": "tools/security-handbook/verify.py",
+      "sha256": "84902fdb189b98266e575b6f5ca9208cc0ddbf6849e37613b2bf9773b934d3bc"
+    },
+    {
+      "path": "tools/site/build.py",
+      "sha256": "cf6711d38fa704d94ee94bce4c205b8dac7dfb316fba45b6375df35df662a6b4"
+    },
+    {
+      "path": "tools/site/requirements-browser.txt",
+      "sha256": "138ad111e5e3dd2172b9ec90096935f1db369c673e09ba89ab20fa557fbc2db1"
+    },
+    {
+      "path": "tools/site/verify.py",
+      "sha256": "65fa0a5eaa6bc2ca9420ae7fd1d472591a0e4c285412c0263bc170515246fcb7"
+    },
+    {
+      "path": "tools/site/verify_browser.py",
+      "sha256": "d9797d9a566c206072ffc472bfc36216de917fef8a1e188f3f8acc5a9e0464d3"
+    },
+    {
+      "path": "Gemfile",
+      "sha256": "88530403e6f37f7b387aae7a0c1576108fccef633c3a8aa1528ca227d8a1497c"
+    },
+    {
+      "path": "Gemfile.lock",
+      "sha256": "8141de1fc06530ae639f933329b7cbf19fedf3558156422d3db20c181df4f993"
+    },
+    {
+      "path": "_config.yml",
+      "sha256": "c4d3fdafbfda5e6ff4438fc28867be8f967babcb79bc15e0e079e9ef2642138f"
+    },
+    {
+      "path": "_includes/header.html",
+      "sha256": "6dec26b340984776e47be2e55ab75b33e85ea4b65307144053ae328a5f964026"
+    },
+    {
+      "path": "_includes/footer.html",
+      "sha256": "603dfb8fa6b6f4983befed454b0b4b387e32d51baea789aefa33a80e93cbd07d"
+    },
+    {
+      "path": "_includes/sidebar.html",
+      "sha256": "410be8406f9e3c78b8b747d3d3e707227cecdb6a1ac63ef9c6d972648db972e1"
+    },
+    {
+      "path": "_layouts/default.html",
+      "sha256": "6df18562c09c8e81224ba310a298391c766085656a4188d6606eff98cfc012fa"
+    },
+    {
+      "path": "css/ros2-design.css",
+      "sha256": "7d9ce7301935ca6fcde7870481085939bf76da275c6f06979be25d8326a06b47"
+    },
+    {
+      "path": "index.md",
+      "sha256": "1636d7edb13eb369f91cc3ad45ed5b76456d17dfe3fb109a6868de9668344c42"
+    }
+  ],
+  "versions": {
+    "weasyprint": "69.0",
+    "Markdown": "3.10.3",
+    "beautifulsoup4": "4.15.0",
+    "PyYAML": "6.0.3",
+    "lxml": "6.1.0"
+  },
+  "graphviz": "dot - graphviz version 14.1.2 (0)",
+  "runtime_cases_summary": {
+    "pass": 6,
+    "fail": 0,
+    "inconclusive": 1
+  },
+  "runtime_suite_all_passed": false,
+  "site_build_verified": true,
+  "validation": {
+    "policy": "offline-checked",
+    "boundary_tests": "run separately with unittest",
+    "runtime_cases": "recorded observations; not repeated by PDF build"
+  }
+}

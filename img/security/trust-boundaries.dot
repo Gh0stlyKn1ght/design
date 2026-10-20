@@ -1,0 +1,25 @@
+digraph SecurityBoundaries {
+  graph [rankdir=TB, bgcolor="white", fontname="DejaVu Sans", fontsize=12, nodesep=0.35, ranksep=0.5, pad=0.15];
+  node [shape=box, style="rounded", color="black", fontname="DejaVu Sans", fontsize=11, margin="0.15,0.10"];
+  edge [color="black", fontname="DejaVu Sans", fontsize=9];
+  subgraph cluster_provisioner {
+    label="PROVISIONING BOUNDARY\nSigning authority keys remain here"; style="dashed";
+    signer [label="Review + signing workstation\nIdentity and permission authority"];
+  }
+  subgraph cluster_runtime {
+    label="RUNTIME HOST BOUNDARY\nHost account and file permissions are separate controls"; style="dashed";
+    { rank=same;
+      talker [label="Talker process\n/security_lab/talker\nApplication grant: publish /chatter"];
+      listener [label="Listener process\n/security_lab/listener\nApplication grant: subscribe /chatter"];
+    }
+    transport [label="UNTRUSTED TRANSPORT\nDDS authentication + policy + configured protection\nROS infrastructure traffic reviewed separately",shape=box,style="dashed"];
+    talker -> transport [label="/chatter data"];
+    transport -> listener [label="authorized delivery"];
+  }
+  signer -> talker [label="Required runtime material only"];
+  signer -> listener [label="Required runtime material only"];
+  attacker [label="Untrusted peer / input\nNo accepted lab identity",shape=ellipse];
+  attacker -> transport [label="attempted communication",style=dashed];
+  limitation [label="Teaching model: no actuators or cloud.\nSeparate enclave paths do not create memory isolation.\nDDS cases observed; host and safety boundaries not established.",shape=note];
+  listener -> limitation [style=invis];
+}

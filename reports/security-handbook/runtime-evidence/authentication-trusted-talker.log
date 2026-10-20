@@ -1,0 +1,9 @@
+[INFO] [1792516040.326612134] [rcl]: Found security directory: /lab/first/keystore/enclaves/security_lab/talker
+[INFO] [1792516041.342198996] [talker]: Publishing: 'Hello World: 1'
+[INFO] [1792516042.342085047] [talker]: Publishing: 'Hello World: 2'
+[INFO] [1792516043.342072369] [talker]: Publishing: 'Hello World: 3'
+[INFO] [1792516044.342062346] [talker]: Publishing: 'Hello World: 4'
+[INFO] [1792516045.342062380] [talker]: Publishing: 'Hello World: 5'
+[INFO] [1792516046.342066815] [talker]: Publishing: 'Hello World: 6'
+[INFO] [1792516047.342084870] [talker]: Publishing: 'Hello World: 7'
+[INFO] [1792516048.320360745] [rclcpp]: signal_handler(SIGINT/SIGTERM)

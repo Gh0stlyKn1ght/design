@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Juan Carlos Nevarez / Gh0stlyKn1ght, 2026. Non-actuating teaching policy. -->
+<policy version="0.2.0">
+  <enclaves>
+    <enclave path="/security_lab/talker">
+      <profiles>
+        <profile ns="/" node="talker">
+          <topics publish="ALLOW">
+            <topic>/chatter</topic>
+            <topic>/rosout</topic>
+            <topic>/parameter_events</topic>
+          </topics>
+          <topics subscribe="ALLOW">
+            <topic>/parameter_events</topic>
+            <topic>/clock</topic>
+          </topics>
+          <services reply="ALLOW">
+            <service>~/describe_parameters</service>
+            <service>~/get_parameter_types</service>
+            <service>~/get_parameters</service>
+            <service>~/list_parameters</service>
+            <service>~/set_parameters</service>
+            <service>~/set_parameters_atomically</service>
+            <service>~/get_type_description</service>
+          </services>
+        </profile>
+      </profiles>
+    </enclave>
+    <enclave path="/security_lab/listener">
+      <profiles>
+        <profile ns="/" node="listener">
+          <topics publish="ALLOW">
+            <topic>/rosout</topic>
+            <topic>/parameter_events</topic>
+          </topics>
+          <topics subscribe="ALLOW">
+            <topic>/chatter</topic>
+            <topic>/parameter_events</topic>
+            <topic>/clock</topic>
+          </topics>
+          <services reply="ALLOW">
+            <service>~/describe_parameters</service>
+            <service>~/get_parameter_types</service>
+            <service>~/get_parameters</service>
+            <service>~/list_parameters</service>
+            <service>~/set_parameters</service>
+            <service>~/set_parameters_atomically</service>
+            <service>~/get_type_description</service>
+          </services>
+        </profile>
+      </profiles>
+    </enclave>
+  </enclaves>
+</policy>

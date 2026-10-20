@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "focused_pages": 5,
+  "local_links_and_assets_checked": 131,
+  "archives_unprocessed": true,
+  "public_oauth_flow": false,
+  "custom_domain_claim": false,
+  "baseurl": "/design",
+  "deployed": false
+}

@@ -1,0 +1,183 @@
+{
+  "status": "runtime-observed",
+  "baseline": "Ubuntu Noble userspace / ROS 2 Jazzy / rmw_fastrtps_cpp",
+  "settings": {
+    "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+    "ROS_DOMAIN_ID": "42",
+    "ROS_AUTOMATIC_DISCOVERY_RANGE": "LOCALHOST",
+    "ROS_SECURITY_ENABLE": "true",
+    "ROS_SECURITY_STRATEGY": "Enforce"
+  },
+  "cases": [
+    {
+      "id": "authorized",
+      "observation_window_seconds": 8.33,
+      "participants_running_at_end_of_window": true,
+      "received_messages": 7,
+      "published_messages": 7,
+      "evidence_paths": [
+        "authorized-listener.log",
+        "authorized-talker.log"
+      ],
+      "outcome": "pass"
+    },
+    {
+      "id": "missing-enclave",
+      "command": [
+        "ros2",
+        "run",
+        "demo_nodes_cpp",
+        "talker",
+        "--ros-args",
+        "--enclave",
+        "/security_lab/missing"
+      ],
+      "exit_status": 250,
+      "ended_without_test_shutdown": true,
+      "evidence_paths": [
+        "missing-enclave.log"
+      ],
+      "outcome": "pass"
+    },
+    {
+      "id": "forbidden-remap",
+      "command": [
+        "ros2",
+        "run",
+        "demo_nodes_cpp",
+        "talker",
+        "--ros-args",
+        "--enclave",
+        "/security_lab/talker",
+        "--remap",
+        "chatter:=not_chatter"
+      ],
+      "exit_status": 250,
+      "ended_without_test_shutdown": true,
+      "evidence_paths": [
+        "forbidden-remap.log"
+      ],
+      "outcome": "pass"
+    },
+    {
+      "id": "wrong-profile",
+      "command": [
+        "ros2",
+        "run",
+        "demo_nodes_cpp",
+        "talker",
+        "--ros-args",
+        "--enclave",
+        "/security_lab/listener"
+      ],
+      "exit_status": 250,
+      "ended_without_test_shutdown": true,
+      "evidence_paths": [
+        "wrong-profile.log"
+      ],
+      "outcome": "pass"
+    },
+    {
+      "id": "listener-publish-probe",
+      "command": [
+        "/usr/bin/python3",
+        "/workspace/examples/security-lab/probe_publish.py",
+        "--ros-args",
+        "--enclave",
+        "/security_lab/listener"
+      ],
+      "exit_status": 2,
+      "ended_without_test_shutdown": true,
+      "evidence_paths": [
+        "listener-publish-probe.log"
+      ],
+      "outcome": "pass"
+    },
+    {
+      "id": "untrusted-authority",
+      "observation_window_seconds": 8.33,
+      "participants_running_at_end_of_window": true,
+      "received_messages": 0,
+      "published_messages": 7,
+      "evidence_paths": [
+        "untrusted-authority-listener.log",
+        "untrusted-authority-talker.log"
+      ],
+      "outcome": "inconclusive"
+    },
+    {
+      "id": "authorized-after-negative-cases",
+      "observation_window_seconds": 8.38,
+      "participants_running_at_end_of_window": true,
+      "received_messages": 7,
+      "published_messages": 7,
+      "evidence_paths": [
+        "authorized-after-negative-cases-listener.log",
+        "authorized-after-negative-cases-talker.log"
+      ],
+      "outcome": "pass"
+    }
+  ],
+  "runtime_artifact_hashes": [
+    {
+      "enclave": "talker",
+      "file": "cert.pem",
+      "sha256": "ad10913ea97e7a9531e7807b9abedfd1b29b89ec408801c8fb60bb0c5e3f78c4"
+    },
+    {
+      "enclave": "talker",
+      "file": "governance.p7s",
+      "sha256": "7b14e9fbe4b51a0798a58e43f412d7139059d3339cb2cb8b6e3b3622af73db1a"
+    },
+    {
+      "enclave": "talker",
+      "file": "permissions.p7s",
+      "sha256": "7727bbc4a974f1e16a54bf6979fabe4adce98291b689bdaf7873c1559a69c650"
+    },
+    {
+      "enclave": "talker",
+      "file": "permissions.xml",
+      "sha256": "fd25b4fbe170651c486f1298e77853c4da88f58c56f8414e75e33133631a81c7"
+    },
+    {
+      "enclave": "listener",
+      "file": "cert.pem",
+      "sha256": "95b58a69aafeebc2447c0663ab5e231f2b1cc320e5af805a1750700889e58b93"
+    },
+    {
+      "enclave": "listener",
+      "file": "governance.p7s",
+      "sha256": "7b14e9fbe4b51a0798a58e43f412d7139059d3339cb2cb8b6e3b3622af73db1a"
+    },
+    {
+      "enclave": "listener",
+      "file": "permissions.p7s",
+      "sha256": "13964bdad8362d473c88d068cb99e90a997447dbc4bf81c14f8b2a488457a4ce"
+    },
+    {
+      "enclave": "listener",
+      "file": "permissions.xml",
+      "sha256": "85c85cd4dd124850f250c02b4ade907b61bb66fb9461c0bf4f080c71cf4a2f8e"
+    }
+  ],
+  "key_file_modes": [
+    {
+      "enclave": "talker",
+      "mode": "0o600",
+      "no_group_or_other_access": true
+    },
+    {
+      "enclave": "listener",
+      "mode": "0o600",
+      "no_group_or_other_access": true
+    }
+  ],
+  "private_keys_exported": false,
+  "physical_robot_tested": false,
+  "limitations": [
+    "No actuator or physical robot was attached.",
+    "No packet-level confidentiality measurement was performed.",
+    "Filesystem modes do not prove isolation from privileged or same-process code.",
+    "Revocation, expiration, hardware-backed keys and load behavior were not tested."
+  ]
+}

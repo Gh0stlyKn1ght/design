@@ -1,0 +1,66 @@
+{
+  "status": "passed",
+  "scope": "Generated runtime permission grant sets match the exact offline expectations; signature enforcement is separately observed through runtime behavior.",
+  "grants": [
+    {
+      "enclave": "/security_lab/talker",
+      "publish": [
+        "ros_discovery_info",
+        "rr/talker/describe_parametersReply",
+        "rr/talker/get_parameter_typesReply",
+        "rr/talker/get_parametersReply",
+        "rr/talker/get_type_descriptionReply",
+        "rr/talker/list_parametersReply",
+        "rr/talker/set_parametersReply",
+        "rr/talker/set_parameters_atomicallyReply",
+        "rt/chatter",
+        "rt/parameter_events",
+        "rt/rosout"
+      ],
+      "subscribe": [
+        "ros_discovery_info",
+        "rq/talker/describe_parametersRequest",
+        "rq/talker/get_parameter_typesRequest",
+        "rq/talker/get_parametersRequest",
+        "rq/talker/get_type_descriptionRequest",
+        "rq/talker/list_parametersRequest",
+        "rq/talker/set_parametersRequest",
+        "rq/talker/set_parameters_atomicallyRequest",
+        "rt/clock",
+        "rt/parameter_events"
+      ],
+      "default": "DENY",
+      "domain": "42"
+    },
+    {
+      "enclave": "/security_lab/listener",
+      "publish": [
+        "ros_discovery_info",
+        "rr/listener/describe_parametersReply",
+        "rr/listener/get_parameter_typesReply",
+        "rr/listener/get_parametersReply",
+        "rr/listener/get_type_descriptionReply",
+        "rr/listener/list_parametersReply",
+        "rr/listener/set_parametersReply",
+        "rr/listener/set_parameters_atomicallyReply",
+        "rt/parameter_events",
+        "rt/rosout"
+      ],
+      "subscribe": [
+        "ros_discovery_info",
+        "rq/listener/describe_parametersRequest",
+        "rq/listener/get_parameter_typesRequest",
+        "rq/listener/get_parametersRequest",
+        "rq/listener/get_type_descriptionRequest",
+        "rq/listener/list_parametersRequest",
+        "rq/listener/set_parametersRequest",
+        "rq/listener/set_parameters_atomicallyRequest",
+        "rt/chatter",
+        "rt/clock",
+        "rt/parameter_events"
+      ],
+      "default": "DENY",
+      "domain": "42"
+    }
+  ]
+}

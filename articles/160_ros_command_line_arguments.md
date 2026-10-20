@@ -6,7 +6,7 @@ abstract:
   This article describes ROS 2 nodes command line arguments and their syntax.
 author: '[Michel Hidalgo](https://github.com/hidmic)'
 date_written: 2019-09
-last_modified: 2021-08
+last_modified: 2026-10
 published: true
 ---
 
@@ -249,6 +249,8 @@ ros2 run some_package some_ros_executable --ros-args --disable-rosout-logs --dis
 Logging is fully enabled by default, thus `--enable-*` options are usually redundant unless a `--disable-*` option found earlier in the command line is being overridden.
 
 #### Enclave assignments
+
+> October 2026 clarification by [Juan Carlos Nevarez · Gh0stlyKn1ght](https://github.com/Gh0stlyKn1ght): `ROS_SECURITY_KEYSTORE` selects the root containing `enclaves/`; `--enclave` selects a credential path inside that root. Neither is a ROS namespace or a host isolation boundary. See the [revised enclave guidance](ros2_security_enclaves.html).
 
 Enclave assignment may be achieved using the `--enclave`/`-e` option.
 This option takes a single string `value` assignment statement, where `value` is a fully qualified enclave path used to locate the respective security artifacts within the configured keystore.

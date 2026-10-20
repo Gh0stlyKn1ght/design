@@ -1,0 +1,9 @@
+[INFO] [1792515821.912715904] [rcl]: Found security directory: /lab/first/keystore/enclaves/security_lab/listener
+[INFO] [1792515822.949216684] [listener]: I heard: [Hello World: 1]
+[INFO] [1792515823.947160864] [listener]: I heard: [Hello World: 2]
+[INFO] [1792515824.947133317] [listener]: I heard: [Hello World: 3]
+[INFO] [1792515825.947678754] [listener]: I heard: [Hello World: 4]
+[INFO] [1792515826.947332107] [listener]: I heard: [Hello World: 5]
+[INFO] [1792515827.947477917] [listener]: I heard: [Hello World: 6]
+[INFO] [1792515828.947287302] [listener]: I heard: [Hello World: 7]
+[INFO] [1792515829.676136084] [rclcpp]: signal_handler(SIGINT/SIGTERM)

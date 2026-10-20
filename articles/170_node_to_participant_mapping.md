@@ -5,7 +5,7 @@ permalink: articles/Node_to_Participant_mapping.html
 abstract: This article analyzes the performance implications of enforcing a one-to-one mapping between ROS Nodes and DDS Participants, and proposes alternative implementation approaches.
 author: '[Ivan Paunovic](https://github.com/ivanpauno)'
 date_written: 2020-06
-last_modified: 2020-07
+last_modified: 2026-10
 published: true
 categories: Middleware
 ---
@@ -125,6 +125,8 @@ To avoid code repetition, a common implementation of this logic is provided by t
 ## Other implications
 
 #### Security
+
+> October 2026 clarification by [Juan Carlos Nevarez · Gh0stlyKn1ght](https://github.com/Gh0stlyKn1ght): nodes sharing a context/participant share effective credentials and permissions. Multiple contexts inside one process do not establish memory isolation. Model the actual context, participant, process and account boundaries; see the [revised enclave guidance](ros2_security_enclaves.html).
 
 Previously, each Node could have different security artifacts.
 That was possible because each Node was mapped to one Participant.

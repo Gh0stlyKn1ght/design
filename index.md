@@ -12,10 +12,18 @@ category_order:
 
 # ROS 2 Design
 
+## October 2026 security handbook
+
+Technical revision and additional material by [Juan Carlos Nevarez · Gh0stlyKn1ght](https://github.com/Gh0stlyKn1ght), with the original article authors credited.
+
+[Read the updated handbook PDF]({{ '/reports/security-handbook/security-handbook.pdf' | relative_url }}) · [Revision and validation report]({{ '/reports/security-handbook/update-summary.pdf' | relative_url }}) · [DDS security chapter]({{ '/articles/ros2_dds_security.html' | relative_url }})
+
+The included software run records six passed ROS cases and one inconclusive separate-authority case. See the validation report for the environment, logs and remaining limits.
+
 This site is repository of articles which are designed to inform and guide the ROS 2 design efforts.
 The goal of [the ROS 2 project](https://github.com/ros2/ros2/wiki) is to leverage what is great about ROS 1 and improve what isn't.
 
-If you would like to contribute to this site, checkout the [contribute](/contribute.html) page to learn how.
+If you would like to contribute to this site, checkout the [contribute]({{ "/contribute.html" | relative_url }}) page to learn how.
 If you would like to contribute to the ROS 2 project, see [this page](https://github.com/ros2/ros2/wiki/Contributing) for more details.
 
 The best mailing list for discussing these topics is [ros-sig-ng-ros@googlegroups.com](mailto:ros-sig-ng-ros@googlegroups.com), the Special Interest Group on Next-Generation ROS mailing list.
@@ -58,7 +66,7 @@ List the categorized articles under their category headers:
 
 ----
 
-#### [{{ p.title }}]({{ p.url }})
+#### [{{ p.title }}]({{ p.url | relative_url }})
 
 > {{ p.abstract }}
         {% endif %}
@@ -75,7 +83,7 @@ List the uncategorized articles:
         {% if p.url contains 'articles/' and p.published == true %}
 ----
 
-#### [{{ p.title }}]({{ p.url }})
+#### [{{ p.title }}]({{ p.url | relative_url }})
 
 > {{ p.abstract }}
         {% endif %}
@@ -94,7 +102,7 @@ These articles are not finished or maybe not even started yet:
     {% if p.url contains 'articles/' and p.published != true %}
 ----
 
-#### [{{ p.title }}]({{ p.url }})
+#### [{{ p.title }}]({{ p.url | relative_url }})
 
 > {{ p.abstract }}
     {% endif %}

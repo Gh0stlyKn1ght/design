@@ -1,0 +1,22 @@
+[
+  {
+    "case": "trusted",
+    "probe_exit_status": 0,
+    "accepted": 1,
+    "rejected": 0,
+    "logs": [
+      "trusted-probe.log",
+      "trusted-talker.log"
+    ]
+  },
+  {
+    "case": "untrusted",
+    "probe_exit_status": 0,
+    "accepted": 0,
+    "rejected": 0,
+    "logs": [
+      "untrusted-probe.log",
+      "untrusted-talker.log"
+    ]
+  }
+]

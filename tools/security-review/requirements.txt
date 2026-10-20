@@ -1,0 +1,5 @@
+weasyprint==69.0
+Markdown==3.10.3
+beautifulsoup4==4.15.0
+PyYAML==6.0.3
+Pillow==12.3.0
